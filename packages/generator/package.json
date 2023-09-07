@@ -1,0 +1,9 @@
+{
+  "name": "@turbomixer/generator",
+  "version": "0.0.1",
+  "description": "A simple but powerful code generator",
+  "main": "lib/index.js",
+  "repository": "https://github.com/turbomixer/turbomixer",
+  "author": "TimeBather<open-source@timebather.cn>",
+  "license": "MIT"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "turbomixer",
+  "version": "0.0.1",
+  "description": "A universal low-code editor engine",
+  "main": "lib/index.js",
+  "repository": "https://github.com/turbomixer/turbomixer",
+  "author": "TimeBather<open-source@timebather.cn>",
+  "license": "MIT"
+}

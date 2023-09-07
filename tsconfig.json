@@ -1,0 +1,12 @@
+{
+    "extends": "./tsconfig.base",
+    "compilerOptions": {
+      "baseUrl": ".",
+      "paths": {
+        "turbomixer": ["packages/turbomixer/src"],
+        "@turbomixer/core": ["packages/core/src"],
+        "@turbomixer/generator": ["packages/generator/src"],
+      },
+    },
+    "files": [],
+  }
