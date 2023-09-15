@@ -1,0 +1,13 @@
+{
+  "name": "@turbomixer/plugin-channel-websocket",
+  "version": "0.0.1",
+  "description": "The websocket channel for turbomixer",
+  "main": "lib/index.js",
+  "repository": "https://github.com/turbomixer/turbomixer",
+  "author": "TimeBather<open-source@timebather.cn>",
+  "license": "MIT",
+  "dependencies": {
+    "cordis": "^2.8.8",
+    "eventemitter3": "^5.0.1"
+  }
+}

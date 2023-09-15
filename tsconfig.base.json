@@ -2,7 +2,7 @@
     "compilerOptions": {
       "strict": true,
       "target": "es2022",
-      "module": "commonjs",
+      "module": "ES6",
       "declaration": true,
       "emitDeclarationOnly": true,
       "composite": true,
