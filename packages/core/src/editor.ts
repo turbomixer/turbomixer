@@ -8,6 +8,9 @@ declare module '.'{
         'editor.activate'(name:string,editor:Editor):void;
         'editor.deactivate'(name:string,editor:Editor):void;
     }
+    interface Context{
+        editor:EditorManager
+    }
 }
 
 export interface CompileResult{
