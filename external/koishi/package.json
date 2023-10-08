@@ -1,0 +1,7 @@
+{
+  "name": "koishi-plugin-turbomixer",
+  "version": "0.0.1",
+  "description": "TurboMixer implemention for Koishi",
+  "main": "index.js",
+  "license": "MIT"
+}
