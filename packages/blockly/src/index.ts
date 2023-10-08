@@ -63,11 +63,13 @@ export class BlocklyEditor implements Editor{
 
     attach(element:HTMLElement){
         this.workspace = this.blockly.inject(element)
-        this._loadWorkspace()
+        if(this.document)
+            this._loadWorkspace()
     }
 
     detach(){
-        this._saveWorkspace();
+        if(this.document)
+            this._saveWorkspace();
         this.workspace?.dispose()
     }
 
