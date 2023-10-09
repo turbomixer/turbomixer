@@ -20,7 +20,6 @@ export interface CompileResult{
 export interface Editor{
     dispose():void;
     load(document:Document):void;
-    compile(options:any):CompileResult;
     save():Document;
 }
 
