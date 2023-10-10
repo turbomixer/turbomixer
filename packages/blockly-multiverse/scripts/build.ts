@@ -4,7 +4,7 @@ export async function runBuild(){
     // Step.1 bundle blockly
     const bundleResult = await build({
         entryPoints:[
-            'src/index.ts'
+            'src/index.js'
         ],
         outfile:'/index.mjs',
         write:false,
