@@ -26,7 +26,9 @@ export async function runBuild(){
         outfile:'lib/index.js',
         bundle:true,
         platform:'browser',
-        format:'esm'
+        format:'esm',
+        minify:true,
+        minifyIdentifiers:true
     })
 
     try{await fs.mkdir('lib')}catch (e) {}
