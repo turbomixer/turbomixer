@@ -1,7 +1,8 @@
 import {createTurbomixer} from '@turbomixer/core'
 import {createBlockly} from "blockly-multiverse";
-import {BlocklyEditor} from "../packages/blockly/src";
+import {BlocklyEditor} from "@turbomixer/editor-blockly";
 import {UiService} from "@turbomixer/ui";
+import '@turbomixer/ui/lib/style.css'
 
 const turbo = createTurbomixer()
 turbo.using(['editor'],(ctx)=>{
@@ -10,7 +11,7 @@ turbo.using(['editor'],(ctx)=>{
 })
 
 turbo.plugin(UiService,{
-    element:document.body
+    element:document.getElementById('app')
 });
 
 /*
