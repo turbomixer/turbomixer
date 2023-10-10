@@ -6,6 +6,7 @@ import DropdownMenuItem from "./components/DropdownMenuItem.vue";
 import ActionBarButton from "./components/ActionBarButton.vue";
 import ActionBarSelector from "./components/ActionBarSelector.vue";
 import Tabbar from "./components/Tabbar.vue";
+import TerminalView from "./views/TerminalView.vue";
 
 const container = ref<HTMLDivElement|null>(null);
 defineExpose({
@@ -24,6 +25,11 @@ const currentPath = reactive(['未命名项目','未命名Blockly代码'])
 
 const currentWindow = ref(null);
 const currentToolBox = ref(null);
+
+const editorTabBars = reactive([
+  {'id':'cGhc','name':'未命名Blockly代码'},
+  {'id':'cGh2','name':'测试HTTP请求'}
+])
 </script>
 
 <template>
@@ -69,32 +75,29 @@ const currentToolBox = ref(null);
     <div class="turbomixer-main">
       <div style="width: 300px; height:calc(100% - 10px);padding:5px;border-right:1px solid rgb(229, 229, 229)">
         <FileTreeNode :tree="{'name':'签到插件','children':[
-          {'name':'新建Blockly程序','activate':true}
+          {'name':'未命名Blockly程序','activate':true},
+          {'name':'未命名Blockly程序(1)'},
         ]}"></FileTreeNode>
       </div>
       <div style="flex:1">
-        <Tabbar :tabs="[
-            {'id':'cGhc','name':'未命名Blockly代码'},
-            {'id':'cGh2','name':'测试HTTP请求'}
-        ]" v-model="currentWindow" :closable="true"></Tabbar>
+        <Tabbar :tabs="editorTabBars" v-model="currentWindow" :closable="true" @close="(id:number)=>editorTabBars.splice(editorTabBars.findIndex(tab=>tab.id == id),1)"></Tabbar>
         <div class="turbomixer-editor" ref="container">
 
         </div>
       </div>
     </div>
     <div class="turbomixer-terminal">
-
       <div class="turbomixer-terminal-header">
         <Tabbar :tabs="[
-            {'id':'terminal','name':'终端'},
+            {'id':'terminal','name':'控制台'},
             {'id':'output','name':'输出'},
             {'id':'debug','name':'调试'},
             {'id':'logging','name':'日志'},
         ]" v-model="currentToolBox" :closable="false"></Tabbar>
       </div>
-      <div style="padding:10px">
-        错误 E5091 块"获取群成员信息" 依赖于上下文 "聊天会话" ，但此上下文中并未提供 (可能是块位置错误) <br/>
-        信息 I1145 代码"未命名Blockly程序"中存在两个未使用的块
+      <div style="flex:1">
+
+        <TerminalView v-show="currentToolBox == 'terminal'"></TerminalView>
       </div>
     </div>
     <div class="turbomixer-footer">
@@ -162,10 +165,11 @@ const currentToolBox = ref(null);
 
 .turbomixer-terminal{
   height:200px;
+  display: flex;
+  flex-direction: column;
 }
 
 .turbomixer-terminal-header{
-
   display: flex;
   height:30px;
   line-height: 30px;
