@@ -7,6 +7,7 @@ import ActionBarButton from "./components/ActionBarButton.vue";
 import ActionBarSelector from "./components/ActionBarSelector.vue";
 import Tabbar from "./components/Tabbar.vue";
 import TerminalView from "./views/TerminalView.vue";
+import DialogManager from "./dialog/DialogManager.vue";
 
 const container = ref<HTMLDivElement|null>(null);
 defineExpose({
