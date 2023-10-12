@@ -15,7 +15,7 @@
 
 <template>
   <div class="turbomixer-dropdown" :class="model == props.id ? ['turbomixer-dropdown-activate'] : []">
-    <div @click="model = model == props.id ? null : props.id" @mouseenter="model = model == null ? null : props.id">
+    <div class="turbomixer-dropdown-button" @click="model = model == props.id ? null : props.id" @mousemove="model = model == null ? null : props.id">
       {{props.title}}
     </div>
     <div class="turbomixer-dropdown-main" :style="{display:model == props.id ? 'block' : 'none'}">
@@ -29,10 +29,12 @@
   display: inline-block;
   position: relative;
   height: 30px;
-  padding-left:10px;
-  padding-right: 10px;
   user-select: none;
   -webkit-user-select: none;
+}
+.turbomixer-dropdown-button{
+  padding-left:10px;
+  padding-right: 10px;
 }
 .turbomixer-dropdown-main{
   position: absolute;
