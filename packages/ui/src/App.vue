@@ -43,6 +43,7 @@ const dialogs = reactive({
 
 <template>
   <div class="turbomixer-app">
+    <DialogManager v-model="dialogs"/>
     <div class="turbomixer-header">
       <div class="turbomixer-icon">
         TurboMixer IDE
