@@ -39,6 +39,11 @@ const dialogs = reactive({
     new:false
   }
 })
+
+
+function openGithubWindow(){
+  window.open("https://github.com/turbomixer/turbomixer");
+}
 </script>
 
 <template>
@@ -49,12 +54,21 @@ const dialogs = reactive({
         TurboMixer IDE
       </div>
       <DropdownMenu title="项目" id="project" v-model="menuSelection">
+        <DropdownMenuItem v-model="menuSelection" @click="dialogs.project.new = true">新建</DropdownMenuItem>
         <DropdownMenuItem v-model="menuSelection">打开</DropdownMenuItem>
         <DropdownMenuItem v-model="menuSelection">保存</DropdownMenuItem>
+        <DropdownMenuItem v-model="menuSelection">设置</DropdownMenuItem>
       </DropdownMenu>
       <DropdownMenu title="编辑" id="edit" v-model="menuSelection"></DropdownMenu>
-      <DropdownMenu title="运行" id="run" v-model="menuSelection"></DropdownMenu>
-      <DropdownMenu title="关于" id="about" v-model="menuSelection"></DropdownMenu>
+      <DropdownMenu title="运行" id="run" v-model="menuSelection">
+        <DropdownMenuItem v-model="menuSelection">在本地(调试)运行</DropdownMenuItem>
+        <DropdownMenuItem v-model="menuSelection">上传并运行</DropdownMenuItem>
+      </DropdownMenu>
+      <DropdownMenu title="关于" id="about" v-model="menuSelection">
+        <DropdownMenuItem v-model="menuSelection">版本信息</DropdownMenuItem>
+        <DropdownMenuItem v-model="menuSelection">开源许可</DropdownMenuItem>
+        <DropdownMenuItem v-model="menuSelection" @click="openGithubWindow()">Github</DropdownMenuItem>
+      </DropdownMenu>
     </div>
     <div class="turbomixer-subheader">
       <div class="turbomixer-subheader-title">
@@ -89,7 +103,7 @@ const dialogs = reactive({
           {'name':'未命名Blockly程序(1)'},
         ]}"></FileTreeNode>
       </div>
-      <div style="flex:1">
+      <div style="flex:1;display: flex;flex-direction: column">
         <Tabbar :tabs="editorTabBars" v-model="currentWindow" :closable="true" @close="(id:number)=>editorTabBars.splice(editorTabBars.findIndex(tab=>tab.id == id),1)"></Tabbar>
         <div class="turbomixer-editor" ref="container">
 
@@ -187,5 +201,9 @@ const dialogs = reactive({
   padding-right:20px;
   background-color: rgb(248, 248, 248);
   border-top: 1px solid rgb(229, 229, 229);
+}
+.turbomixer-editor{
+  flex:1;
+  z-index: -1;
 }
 </style>

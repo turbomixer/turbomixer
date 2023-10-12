@@ -6,10 +6,10 @@
   <div style="height: 100%;display: flex">
     <div style="width: 20em">
       <div style="border-bottom: 1px solid  rgb(240,240,240)">
-        <div style="display: inline-block;height: 1.5em;width: 1.5em;line-height: 1.5em;font-size: 1em;text-align: center;">
+        <div class="turbomixer-terminal-view-button">
           +
         </div>
-        <div style="display: inline-block;height: 1.5em;width: 1.5em;line-height: 1.5em;font-size: 1em;text-align: center;">
+        <div class="turbomixer-terminal-view-button">
           -
         </div>
       </div>
@@ -25,5 +25,16 @@
 </template>
 
 <style scoped>
-
+.turbomixer-terminal-view-button{
+  display: inline-block;
+  height: 1.5em;
+  width: 1.5em;
+  line-height: 1.5em;
+  font-size: 1em;
+  text-align: center;
+  border-radius: 0.2em;
+}
+.turbomixer-terminal-view-button:hover{
+  background: #eeeeee;
+}
 </style>
