@@ -30,6 +30,14 @@ const editorTabBars = reactive([
   {'id':'cGhc','name':'未命名Blockly代码'},
   {'id':'cGh2','name':'测试HTTP请求'}
 ])
+
+const dialogs = reactive({
+  project:{
+    open:false,
+    save:false,
+    new:false
+  }
+})
 </script>
 
 <template>
