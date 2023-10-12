@@ -1,1 +1,1 @@
-export * from 'blockly/blockly_compressed'
+export * from 'blockly'
