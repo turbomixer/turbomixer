@@ -17,6 +17,8 @@ declare module "@turbomixer/core"{
 
 export class UiService extends Service{
 
+    static using = ['project'];
+
     app:VueApp
 
     constructor(ctx:Context,protected config:UiConfigure) {

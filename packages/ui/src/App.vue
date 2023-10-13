@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import FileTreeNode from './components/FileTreeNode.vue';
-import {reactive, ref} from "vue";
+import {computed, getCurrentInstance, inject, onMounted, reactive, ref} from "vue";
 import DropdownMenu from "./components/DropdownMenu.vue";
 import DropdownMenuItem from "./components/DropdownMenuItem.vue";
 import ActionBarButton from "./components/ActionBarButton.vue";
@@ -8,6 +8,8 @@ import ActionBarSelector from "./components/ActionBarSelector.vue";
 import Tabbar from "./components/Tabbar.vue";
 import TerminalView from "./views/TerminalView.vue";
 import DialogManager from "./dialog/DialogManager.vue";
+import {Context,Project} from "@turbomixer/core";
+import {generateTreeNodeList} from "./utils/file-list";
 
 const container = ref<HTMLDivElement|null>(null);
 defineExpose({
@@ -17,10 +19,6 @@ defineExpose({
 })
 
 const menuSelection = ref(null);
-
-const project = ref<null|{
-  name:string
-}>(null);
 
 const currentPath = reactive(['未命名项目','未命名Blockly代码'])
 
@@ -39,7 +37,28 @@ const dialogs = reactive({
     new:false
   }
 })
+const ctx = inject<Context>('ctx');
 
+const project = ref<Project|null>(ctx?.project.current ?? null);
+
+const files = computed(()=>generateTreeNodeList(project.value?.files))
+
+const fileList = computed(()=>({name:"未命名Blockly项目",children:files.value}));
+
+const instance = getCurrentInstance();
+
+console.info(ctx);
+
+console.info(files,()=>generateTreeNodeList(project.value?.files));
+
+onMounted(()=>{
+  ctx?.on('project:update',(_project)=>{
+    console.info("Refresh");
+    project.value = _project;
+    console.info(instance)
+    instance?.proxy?.$forceUpdate?.();
+  });
+})
 
 function openGithubWindow(){
   window.open("https://github.com/turbomixer/turbomixer");
@@ -98,13 +117,10 @@ function openGithubWindow(){
     </div>
     <div class="turbomixer-main">
       <div style="width: 300px; height:calc(100% - 10px);padding:5px;border-right:1px solid rgb(229, 229, 229)">
-        <FileTreeNode :tree="{'name':'签到插件','children':[
-          {'name':'未命名Blockly程序','activate':true},
-          {'name':'未命名Blockly程序(1)'},
-        ]}"></FileTreeNode>
+        <FileTreeNode :tree="fileList"></FileTreeNode>
       </div>
       <div style="flex:1;display: flex;flex-direction: column">
-        <Tabbar :tabs="editorTabBars" v-model="currentWindow" :closable="true" @close="(id:number)=>editorTabBars.splice(editorTabBars.findIndex(tab=>tab.id == id),1)"></Tabbar>
+        <Tabbar :tabs="editorTabBars" v-model="currentWindow" :closable="true" @close="(id:string)=>editorTabBars.splice(editorTabBars.findIndex(tab=>tab.id == id),1)"></Tabbar>
         <div class="turbomixer-editor" ref="container">
 
         </div>
