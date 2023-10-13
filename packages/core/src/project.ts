@@ -3,6 +3,7 @@ import {Service} from "./app";
 import {Context} from "cordis";
 
 export interface ProjectFile{
+    type: 'file'
     lock():Awaitable<boolean>;
     unlock():Awaitable<boolean>;
     save():Awaitable<boolean>;
@@ -11,15 +12,28 @@ export interface ProjectFile{
     isLocked():Awaitable<boolean>
 }
 
+export interface ProjectDirectory{
+    type: 'directory'
+    children:Record<string, ProjectFile | ProjectDirectory>
+}
 
 export interface Project{
-    id:string;
+    name:string;
     description?:string
-    files:Record<string, ProjectFile>
+    files:Record<string, ProjectFile | ProjectDirectory>
 }
 
 export interface ProjectDelta extends Partial<Project>{
     update_type : 'full' | 'new' | 'remove'
+}
+
+declare module "."{
+    interface Events{
+        'project:update'(newValue:Project):void;
+    }
+    interface Context{
+        project:ProjectManager
+    }
 }
 
 export class ProjectManager extends Service{
@@ -32,6 +46,7 @@ export class ProjectManager extends Service{
 
     open(project:Project){
         this.current = project;
+        this.ctx.emit('project:update',project)
     }
 
     delta(delta:ProjectDelta){
