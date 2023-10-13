@@ -1,4 +1,11 @@
 import {Context} from "cordis";
+import {ProjectManager} from "./project";
+
+declare module "."{
+    interface Context{
+        project:ProjectManager
+    }
+}
 
 export {Context as App}
 
