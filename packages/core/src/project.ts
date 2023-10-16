@@ -4,6 +4,9 @@ import {Context} from "cordis";
 
 export interface ProjectFile{
     type: 'file'
+
+    extension:string
+
     lock():Awaitable<boolean>;
     unlock():Awaitable<boolean>;
     save():Awaitable<boolean>;
@@ -37,6 +40,8 @@ declare module "."{
 }
 
 export class ProjectManager extends Service{
+
+    extension_map : Map<string,string> = new Map();
 
     constructor(ctx:Context) {
         super(ctx,'project');

@@ -31,6 +31,7 @@
   height: 30px;
   user-select: none;
   -webkit-user-select: none;
+  z-index: 10;
 }
 .turbomixer-dropdown-button{
   padding-left:10px;
@@ -42,6 +43,7 @@
   min-width: 200px;
   border: 1px solid rgb(200, 200, 200);
   left: 0;
+  z-index: 10;
 }
 .turbomixer-dropdown-activate{
   background-color:#bbbbff;

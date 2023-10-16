@@ -1,15 +1,17 @@
 import {Project, ProjectDirectory, ProjectFile} from "@turbomixer/core";
 
-export function generateTreeNodeList(file?:Record<string, ProjectFile | ProjectDirectory> | undefined):any{
+export function generateTreeNodeList(file?:Record<string, ProjectFile | ProjectDirectory> | undefined,path:string = ''):any{
     if(!file)return [];
     return Object.entries(file).map(([name,entity])=>{
         if(entity.type == 'directory'){
             return {
+                id:path + "/" + name,
                 name,
-                children:generateTreeNodeList(entity.children)
+                children:generateTreeNodeList(entity.children,path + "/" + name)
             }
         }else{
             return {
+                id:path + "/" + name,
                 name
             }
         }
