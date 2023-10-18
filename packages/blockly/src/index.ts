@@ -11,6 +11,12 @@ declare module '@turbomixer/core' {
 
 export class BlocklyEditor implements Editor{
 
+    static init(ctx:Context,name:string){
+        ctx.using(['project'],()=>{
+            ctx.project.extension_map.set('blockly',name);
+        })
+    }
+
     blockly = createBlockly();
     workspace:WorkspaceSvg | null = null
     document:Document | null = null
