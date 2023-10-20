@@ -3,6 +3,9 @@ import {createBlockly} from "blockly-multiverse";
 import {BlocklyEditor} from "@turbomixer/editor-blockly";
 import {UiService} from "@turbomixer/ui";
 import '@turbomixer/ui/lib/style.css'
+import {BehaviorSubject} from "rxjs";
+import {AbstractFilesystemAPI, DirectoryAccessor, FileEntity,Project} from "@turbomixer/core";
+import * as Client from "@turbomixer/client";
 
 const turbo = createTurbomixer()
 turbo.using(['editor'],(ctx)=>{
@@ -12,6 +15,35 @@ turbo.using(['editor'],(ctx)=>{
 
 turbo.plugin(UiService,{
     element:document.getElementById('app')
+});
+
+const demoApi : Partial<AbstractFilesystemAPI> = {
+    async watch(entityKey: string, listener: (entity: FileEntity, type: ("add" | "remove" | "rename"), newValue?: FileEntity) => void): Promise<() => Promise<void>> {
+        console.info('watch',entityKey,listener);
+        return ()=>Promise.resolve()
+    },
+    async list(){
+        console.info("list");
+        return [
+            {type:'directory','name':"Demo3"},
+            {type:'file','name':"Demo4.blockly"}
+        ]
+    },
+    async open(path:string){
+        return 'file:'+path;
+    },
+    async close(handler:string){
+        console.info("close",handler);
+    },
+    async read(handler:string){
+        console.info("read",handler);
+        return new ArrayBuffer(1);
+    }
+}
+
+turbo.plugin(Client,{
+    name:'Test',
+    server:'http://localhost:8788/turbomixer/api',
 });
 
 /*

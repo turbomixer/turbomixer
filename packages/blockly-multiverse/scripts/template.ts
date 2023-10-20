@@ -43,6 +43,7 @@ function defineProxyInjection(original,map,steel={}){
         },
         defineProperty(o,p,a){
             if(steel[p]){
+                Object.defineProperty(steel_data,p,a);
                 return true;
             }
             return true;
@@ -92,30 +93,21 @@ export function createBlockly():typeof Blockly{
     const module = {
         exports:{}
     };
-    const console = {
-        info(){
-            return;
-        },
-        warn(){
-            return;
-        },
-        error(){
-            return;
-        }
-    };
 
-    const setTimeout = function(cb,t){
-        _window.setTimeout(cb,t);
+    const setTimeout = function(cb,t,...args){
+        console.info('setTimeout',cb,t);
+        _window.setTimeout(cb,t,...args);
     }
 
-    const setInterval = function(cb,t){
-        _window.setTimeout(cb,t);
+    const setInterval = function(cb,t,...args){
+        console.info('setInterval',cb,t);
+        _window.setTimeout(cb,t,...args);
     }
 
     const {element:__head,dispose:disposeDocumentHead}=defineElementDisposable(_document.head);
     const {element:__body,dispose:disposeDocumentBody}=defineElementDisposable(_document.body);
     const {element:document,dispose:disposeDocument}=defineElementDisposable(_document,{body:__body,head:__head});
-    const {element:window,dispose:disposeWindow}=defineElementDisposable(_window,{document:document},{Blockly:true,globalThis:'self'});
+    const {element:window,dispose:disposeWindow}=defineElementDisposable(_window,{document:document,setTimeout,setInterval},{Blockly:true,globalThis:'self'});
 
     const globalThis = window;
     `{{CODE}}`;

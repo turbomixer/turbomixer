@@ -39,7 +39,7 @@ export class BlocklyEditor implements Editor{
 
     load(document: Document): void {
         this.document = document;
-        if(this.workspace)
+        if(this.workspace && this.document)
             this._loadWorkspace();
     }
 
@@ -68,7 +68,14 @@ export class BlocklyEditor implements Editor{
     }
 
     attach(element:HTMLElement){
-        this.workspace = this.blockly.inject(element)
+        this.workspace = this.blockly.inject(element,{
+            toolbox: {
+                "kind": "categoryToolbox",
+                "contents": []
+            },
+            rtl:false,
+
+        })
         if(this.document)
             this._loadWorkspace()
     }
@@ -103,6 +110,14 @@ export class BlocklyEditor implements Editor{
         disposeListener = ctx.once('dispose',()=>{
             dispose();
         })
+        this.workspace?.updateToolbox(this.getWorkspace());
         return dispose;
+    }
+
+    getWorkspace(){
+        return {
+            "kind": "categoryToolbox",
+            "contents": Array.from(this.toolbox_categories.values())
+        }
     }
 }

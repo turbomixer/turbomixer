@@ -1,7 +1,7 @@
 {
-  "name": "@turbomixer/core",
+  "name": "@turbomixer/client",
   "version": "0.0.1",
-  "description": "The core module for turbomixer",
+  "description": "The client module for turbomixer",
   "main": "lib/index.cjs",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
@@ -9,8 +9,8 @@
   "author": "TimeBather<open-source@timebather.cn>",
   "license": "MIT",
   "dependencies": {
-    "@msgpack/msgpack": "^3.0.0-beta2",
-    "cordis": "^2.8.8",
-    "rxjs": "^7.8.1"
+    "axios": "^1.5.1",
+    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.7.2"
   }
 }

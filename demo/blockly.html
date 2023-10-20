@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <div style="height: 500px;width: 500px" id="app"></div>
+</head>
+<body>
+<script type="module" lang="ts">
+    import {inject} from "blockly";
+    const workspace = inject(document.getElementById('app'), {
+        toolbox: {
+            "kind": "categoryToolbox",
+            "contents": [
+                {
+                    "kind": "category",
+                    "name": "Control",
+                    "contents": [
+                        {
+                            "kind": "block",
+                            "type": "controls_if"
+                        },
+                    ]
+                }
+            ]
+        },
+        rtl: false,
+
+    })
+    setTimeout(()=>{
+        workspace.updateToolbox({
+            "kind": "categoryToolbox",
+            "contents": [
+                {
+                    "kind": "category",
+                    "name": "Control",
+                    "contents": [
+                        {
+                            "kind": "block",
+                            "type": "controls_if"
+                        },
+                    ]
+                }
+            ]
+        });
+    })
+
+
+</script>
+</body>
+</html>

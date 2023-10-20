@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "The user interface module for turbomixer",
   "main": "lib/ui.js",
+  "types": "lib/index.d.ts",
   "repository": "https://github.com/turbomixer/turbomixer",
   "author": "TimeBather<open-source@timebather.cn>",
   "license": "MIT",

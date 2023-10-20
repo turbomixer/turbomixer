@@ -2,6 +2,9 @@ import {Service} from "./app";
 import {Context} from "cordis";
 import {Events} from "cordis";
 import {Document} from "./document";
+import {FileReference} from "./file";
+import {BehaviorSubject, Observer, Subject, Subscription} from "rxjs";
+import {decode} from "@msgpack/msgpack";
 
 declare module '.'{
     interface Events{
@@ -26,20 +29,32 @@ export interface Editor{
 export interface Editors{
 }
 
+export type EditorFactory = {
+    new():Editor,
+    init(ctx:Context,name:string):void;
+}
+
 export class EditorManager extends Service{
 
     protected editor : Editor|null = null
 
     protected editor_name : string|null = null
 
-    protected registry : Map<string,{new():Editor}> = new Map();
+    protected registry : Map<string,EditorFactory> = new Map();
+
+    protected file : BehaviorSubject<FileReference|null> = new BehaviorSubject<FileReference|null>(null);
+
+    protected document : BehaviorSubject<Document | null> = new BehaviorSubject<Document | null>(null);
+
+    protected managerSubscription : Subscription | null = null;
 
     constructor(ctx:Context) {
         super(ctx,'editor');
     }
 
-    register(name:string,factory:{new():Editor}){
+    register(name:string,factory:EditorFactory){
         this.registry.set(name,factory);
+        factory.init(this.ctx,name); // @todo disposable
     }
 
     activate<T extends keyof Editors>(name:T):Editors[T]{
@@ -49,8 +64,22 @@ export class EditorManager extends Service{
         const _constructor = this.registry.get(name)
         if(!_constructor)
             throw new Error('Cannot found editor '+name)
-        this.editor =  new _constructor;
+        this.editor = new _constructor;
         this.editor_name = name;
+        this.managerSubscription = this.file.subscribe(async (file)=>{
+            if(file){
+                const data = await file.read();
+                if(data && data.byteLength > 3){
+                    // @todo version information
+                    const header = new Uint8Array(data.slice(3));
+                    if(new TextDecoder().decode(header) !== 'TMF')
+                        throw new Error();
+                    this.editor?.load();
+                }else{
+
+                }
+            }
+        })
         this.ctx.emit('editor.activate',this.editor_name as string,this.editor)
         return this.editor as Editors[T];
     }
@@ -60,7 +89,16 @@ export class EditorManager extends Service{
             return
         this.ctx.emit('editor.deactivate',this.editor_name as string,this.editor)
         this.editor.dispose()
+        this.managerSubscription?.unsubscribe()
         this.editor = null
         this.editor_name = null;
+    }
+
+    mount(file:FileReference){
+        this.file.next(file);
+    }
+
+    unmount(){
+        this.file.next(null);
     }
 }

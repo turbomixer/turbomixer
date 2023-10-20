@@ -1,33 +1,28 @@
-import {Awaitable} from "./utils";
-import {Service} from "./app";
+import {Service} from ".";
+import {Subject} from "rxjs";
+import {DirectoryAccessor} from "./file";
 import {Context} from "cordis";
 
-export interface ProjectFile{
-    type: 'file'
-
-    extension:string
-
-    lock():Awaitable<boolean>;
-    unlock():Awaitable<boolean>;
-    save():Awaitable<boolean>;
-    load():Awaitable<string>;
-
-    isLocked():Awaitable<boolean>
+export interface ProjectIdentifier{
+    provider:string
+    id:string
+    name:string
+    path?:string
 }
-
-export interface ProjectDirectory{
-    type: 'directory'
-    children:Record<string, ProjectFile | ProjectDirectory>
-}
-
 export interface Project{
-    name:string;
-    description?:string
-    files:Record<string, ProjectFile | ProjectDirectory>
+    name:Subject<string>
+    description:Subject<string | null>
+    dependencies:Subject<string[]>
+    files:DirectoryAccessor
 }
 
-export interface ProjectDelta extends Partial<Project>{
-    update_type : 'full' | 'new' | 'remove'
+export interface ProjectProvider<P extends Project = Project>{
+    id:string
+    name?:string
+    list():Promise<ProjectIdentifier[]>
+    open(identifier:ProjectIdentifier):Promise<P>
+    create?(name:string):Promise<ProjectIdentifier>
+    close(project:P):Promise<void>
 }
 
 declare module "."{
@@ -48,13 +43,37 @@ export class ProjectManager extends Service{
     }
 
     current : Project | null = null
+    currentIdentifier : ProjectIdentifier | null = null
 
-    open(project:Project){
-        this.current = project;
-        this.ctx.emit('project:update',project)
+    protected providers : Map<string,ProjectProvider> = new Map();
+
+    register(provider:ProjectProvider){
+        this.providers.set(provider.id,provider);
     }
 
-    delta(delta:ProjectDelta){
-        // @todo:delta update
+    unregister(provider:ProjectProvider){
+        this.providers.delete(provider.id)
     }
+
+    async list() {
+        let values = await Promise.allSettled<ProjectIdentifier[]>(
+            Array.from(this.providers.values()).map(provider => provider.list())
+        );
+        return values
+            .filter(value => value.status == 'fulfilled')
+            .map((value) => (value as PromiseFulfilledResult<ProjectIdentifier[]>).value)
+            .flat()
+    }
+
+    async open(identifier:ProjectIdentifier){
+        const project = await this.providers.get(identifier.provider)?.open(identifier)
+        if(project) {
+            if(this.current)
+                await this.providers.get(identifier.provider)?.close(this.current);
+            this.currentIdentifier = identifier;
+            this.current = project;
+            this.ctx.emit('project:update',project)
+        }
+    }
+
 }
