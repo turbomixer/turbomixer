@@ -9,6 +9,8 @@
   "license": "MIT",
   "dependencies": {
     "element-plus": "^2.3.12",
+    "lodash": "^4.17.21",
+    "nanoid": "^5.0.2",
     "vue": "^3.3.4"
   },
   "type": "module",

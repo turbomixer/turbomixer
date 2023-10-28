@@ -25,17 +25,6 @@ export class UiService extends Service{
         super(ctx,'ui');
         this.app = createApp(App)
             .provide('ctx',this.ctx)
-        ctx.on('editor.activate',(name,editor)=>{
-            const container = this.getContainer();
-            console.info("Activate",container,editor);
-            if(editor.attach && container){
-                editor.attach(container);
-            }
-        })
-        ctx.on('editor.deactivate',(name,editor)=>{
-            editor.detach?.();
-            console.info("Deactivate");
-        })
     }
 
     protected start(): Awaitable<void> {

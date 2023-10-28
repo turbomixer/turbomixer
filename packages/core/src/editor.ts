@@ -1,104 +1,115 @@
-import {Service} from "./app";
+import {ApiRegistry, Document, Service} from ".";
 import {Context} from "cordis";
-import {Events} from "cordis";
-import {Document} from "./document";
-import {FileReference} from "./file";
-import {BehaviorSubject, Observer, Subject, Subscription} from "rxjs";
-import {decode} from "@msgpack/msgpack";
+import {BehaviorSubject, combineLatest, map, Subject} from "rxjs";
+import * as events from "events";
 
 declare module '.'{
-    interface Events{
-        'editor.activate'(name:string,editor:Editor):void;
-        'editor.deactivate'(name:string,editor:Editor):void;
-    }
     interface Context{
         editor:EditorManager
     }
 }
 
-export interface CompileResult{
-    files:Record<string, string>
-}
-
 export interface Editor{
-    dispose():void;
     load(document:Document):void;
     save():Document;
+    clear():void;
 }
 
-export interface Editors{
+export interface EditorFactory{
+    new(ctx:Context,api_registry:ApiRegistry):Editor;
 }
 
-export type EditorFactory = {
-    new():Editor,
-    init(ctx:Context,name:string):void;
-}
-
-export class EditorManager extends Service{
-
-    protected editor : Editor|null = null
-
-    protected editor_name : string|null = null
-
-    protected registry : Map<string,EditorFactory> = new Map();
-
-    protected file : BehaviorSubject<FileReference|null> = new BehaviorSubject<FileReference|null>(null);
-
-    protected document : BehaviorSubject<Document | null> = new BehaviorSubject<Document | null>(null);
-
-    protected managerSubscription : Subscription | null = null;
+export class EditorManager extends Service {
 
     constructor(ctx:Context) {
         super(ctx,'editor');
+        ctx.on('project:update',()=>{
+            this.editor.next(null);
+            this.document.next(null);
+
+        })
     }
+
+    protected registry : Map<string,Editor> = new Map();
+
+    protected api_registry : ApiRegistry = new ApiRegistry();
+
+    protected editor : BehaviorSubject<Editor | null> = new BehaviorSubject<Editor | null>(null);
+
+    protected document : BehaviorSubject<Document | null> = new BehaviorSubject<Document | null>(null);
+
+    protected editor_channel : Subject<{name:string,editor:Editor,type:'new'|'remove'}> = new Subject<{name:string,editor: Editor; type: 'new'|'remove'}>();
 
     register(name:string,factory:EditorFactory){
-        this.registry.set(name,factory);
-        factory.init(this.ctx,name); // @todo disposable
+        if(this.registry.has(name))
+            this.unregister(name);
+        this.registry.set(name,new factory(this.ctx,this.api_registry));
+        (this.caller??this.ctx).on('dispose',()=>{
+            this.unregister(name);
+        })
+        this.editor_channel.next({
+            type:'new',
+            name,
+            editor:this.registry.get(name) as Editor
+        });
     }
 
-    activate<T extends keyof Editors>(name:T):Editors[T]{
-        if(this.editor!=null){
-            this.deactivate();
+    unregister(name:string){
+        if(!this.registry.has(name)){
+            return;
         }
-        const _constructor = this.registry.get(name)
-        if(!_constructor)
-            throw new Error('Cannot found editor '+name)
-        this.editor = new _constructor;
-        this.editor_name = name;
-        this.managerSubscription = this.file.subscribe(async (file)=>{
-            if(file){
-                const data = await file.read();
-                if(data && data.byteLength > 3){
-                    // @todo version information
-                    const header = new Uint8Array(data.slice(3));
-                    if(new TextDecoder().decode(header) !== 'TMF')
-                        throw new Error();
-                    this.editor?.load();
-                }else{
+        if(this.registry.get(name) == this.editor.value && this.editor.value != null){
+            this.close();
+        }
+        this.editor_channel.next({
+            type:'remove',
+            name,
+            editor:this.registry.get(name) as Editor
+        });
+        this.registry.delete(name);
+    }
 
-                }
+    open(name:string,document:Document){
+        if(!this.registry.has(name))
+            return;
+        if(this.registry.get(name) != this.editor.value)
+            this.editor.next(this.registry.get(name) as Editor);
+        this.document.next(document);
+    }
+
+    close(){
+        this.document.next(null);
+        this.editor.next(null);
+    }
+
+    save():Document|null{
+        return this.editor.value?.save() ?? null;
+    }
+
+    getEditorObservable(){
+        return this.editor.asObservable();
+    }
+
+    using<S extends Editor = Editor>(name:string):BehaviorSubject<S|null>{
+        const subject:BehaviorSubject<S | null> = new BehaviorSubject<S | null>(null);
+
+        const subscriber = this.editor_channel.subscribe((editor)=>{
+            console.info("Editor changed:",editor)
+            if(editor.name == name){
+                subject.next(editor.type == 'remove' ? null : editor.editor as S);
             }
         })
-        this.ctx.emit('editor.activate',this.editor_name as string,this.editor)
-        return this.editor as Editors[T];
-    }
 
-    deactivate(){
-        if(!this.editor)
-            return
-        this.ctx.emit('editor.deactivate',this.editor_name as string,this.editor)
-        this.editor.dispose()
-        this.managerSubscription?.unsubscribe()
-        this.editor = null
-        this.editor_name = null;
-    }
+        subject.subscribe({
+            complete(){
+                subscriber.unsubscribe();
+            }
+        });
 
-    mount(file:FileReference){
-        this.file.next(file);
-    }
+        if(this.registry.get(name))
+            subject.next(this.registry.get(name) as S ?? null);
+        console.info(this.registry.get(name),name)
 
-    unmount(){
-        this.file.next(null);
+        return subject;
     }
 }

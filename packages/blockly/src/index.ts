@@ -1,7 +1,7 @@
-import {Document, Editor, CompileResult} from "@turbomixer/core";
+import {Document, Editor, ApiRegistry,Context} from "@turbomixer/core";
 import {createBlockly} from "blockly-multiverse";
 import type {WorkspaceSvg} from 'blockly'
-import {Context, Service} from "cordis";
+import {BehaviorSubject,Subscription} from 'rxjs';
 
 declare module '@turbomixer/core' {
     interface Editors {
@@ -11,85 +11,64 @@ declare module '@turbomixer/core' {
 
 export class BlocklyEditor implements Editor{
 
-    static init(ctx:Context,name:string){
-        ctx.using(['project'],()=>{
-            ctx.project.extension_map.set('blockly',name);
-        })
-    }
+    toolbox_categories:Set<any> = new Set<any>();
 
     blockly = createBlockly();
-    workspace:WorkspaceSvg | null = null
-    document:Document | null = null
+    workspace:WorkspaceSvg | null = null;
 
-    toolbox_categories:Set<any> = new Set<any>()
+    document: BehaviorSubject<Document | null> = new BehaviorSubject<Document|null>(null);
 
-    compile(options: any): CompileResult {
-        if(!this.document)
-            throw new Error('Cannot compile because no document loaded');
-        const workspace = new this.blockly.Workspace();
-        this.blockly.serialization.workspaces.load(this.document?.content,workspace);
-        return {
-            files:{}
-        };
+    dependencies: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+
+    document_subscriber : Subscription | null = null;
+
+    constructor(ctx:Context,api_registry:ApiRegistry) {
+        ctx.project.extension_map.set("blockly","blockly");
     }
 
-    dispose(): void {
-        this.blockly['__skycover__'].dispose();
-    }
-
-    load(document: Document): void {
-        this.document = document;
-        if(this.workspace && this.document)
-            this._loadWorkspace();
+    load(document:Document){
+        this.document.next(document);
     }
 
     save(): Document {
-        if(!this.document)
-            throw new Error('Cannot save because no document loaded');
-        if(this.workspace)
-            this._saveWorkspace();
-        return this.document;
+        if(this.workspace == null)
+            throw new Error('Workspace is null!');
+        const document:Document = {
+            content: this.blockly.serialization.workspaces.save(this.workspace),
+            dependencies: this.dependencies.value
+        }
+        this.document.next(document);
+        return document;
     }
 
-    protected _saveWorkspace(){
-        if(!this.document)
-            throw new Error('No document loaded');
-        if(!this.workspace)
-            throw new Error('No workspace loaded');
-        this.document.content = this.blockly.serialization.workspaces.save(this.workspace);
-    }
-
-    protected _loadWorkspace(){
-        if(!this.document)
-            throw new Error('No document loaded');
-        if(!this.workspace)
-            throw new Error('No workspace loaded');
-        this.blockly.serialization.workspaces.load(this.document.content,this.workspace);
-    }
-
-    attach(element:HTMLElement){
-        this.workspace = this.blockly.inject(element,{
+    attach(container:HTMLElement){
+        this.workspace = this.blockly.inject(container,{
             toolbox: {
                 "kind": "categoryToolbox",
-                "contents": []
-            },
-            rtl:false,
+                "contents": Array.from(this.toolbox_categories.values())
+            }
+        });
 
+        this.document_subscriber = this.document.subscribe((newDocument)=>{
+            this.blockly.serialization.workspaces.load(newDocument?.content ?? {},this.workspace as WorkspaceSvg);
+            this.dependencies.next(newDocument?.dependencies ?? [])
         })
-        if(this.document)
-            this._loadWorkspace()
     }
 
     detach(){
-        if(this.document)
-            this._saveWorkspace();
-        this.workspace?.dispose()
+        this.document_subscriber?.unsubscribe();
+        this.workspace?.dispose();
+        this.blockly['__skycover__'].dispose();
     }
 
-    registerBlock(ctx:Context,name:string,def:any){
+    clear() {
+        this.document.next(null);
+    }
+
+    registerBlock(ctx:Context,name:string,def:any):()=>void{
         this.blockly.Blocks[name] = def;
 
-        let disposeListener : ()=>boolean;
+        let disposeListener : ()=>void;
         const dispose = ()=>{
             disposeListener?.();
             this.blockly.Blocks[name] = null;
@@ -98,6 +77,10 @@ export class BlocklyEditor implements Editor{
             dispose();
         })
         return dispose;
+    }
+
+    unregisterBlock(id:string){
+        this.blockly.Blocks[id] = null;
     }
 
     registerCategory(ctx:Context,category:any){
@@ -120,4 +103,45 @@ export class BlocklyEditor implements Editor{
             "contents": Array.from(this.toolbox_categories.values())
         }
     }
+}
+
+export const _using = ['editor'];
+
+export {_using as using};
+
+export function apply(ctx:Context){
+    ctx.editor.register('blockly',BlocklyEditor);
+    let registrations:(()=>void)[] = [];
+    console.info("Registering.....");
+    let registration_handler = ctx.editor.using<BlocklyEditor>('blockly').subscribe((editor)=>{
+        console.info("Registration triggered!")
+        registrations.forEach((registration)=>registration());
+        registrations = [];
+        if(editor){
+            console.info("Registration!")
+            registrations.push(
+                editor.registerBlock(ctx,'test',{
+                    init: function() {
+                        this.appendDummyInput()
+                            .appendField("Hello World");
+                        this.setPreviousStatement(true, null);
+                        this.setNextStatement(true, null);
+                        this.setColour(230);
+                        this.setTooltip("");
+                        this.setHelpUrl("");
+                    }
+                })
+            );
+            registrations.push(editor.registerCategory(ctx,{
+                "kind": "category",
+                "name": "Control",
+                "contents": [
+                    {
+                        "kind": "block",
+                        "type": "controls_if"
+                    },
+                ]
+            }))
+        }
+    });
 }

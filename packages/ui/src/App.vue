@@ -9,7 +9,8 @@ import Tabbar from "./components/Tabbar.vue";
 import TerminalView from "./views/TerminalView.vue";
 import DialogManager from "./dialog/DialogManager.vue";
 import {Context, FileReference, Project} from "@turbomixer/core";
-import {Subscription} from 'rxjs';
+import {Subscription,pairwise} from 'rxjs';
+import {EditorTabbarItem, EditorTabbarManager} from "./editor";
 
 const container = ref<HTMLDivElement|null>(null);
 defineExpose({
@@ -20,13 +21,12 @@ defineExpose({
 
 const menuSelection = ref(null);
 
-const currentWindow = ref<any>(null);
 const currentToolBox = ref(null);
 
-const editorTabBars = reactive<any[]>([])
+const tabs = ref<any[]>([])
 
 
-const dialogs = reactive({
+const dialogs = ref({
   project:{
     open:false,
     save:false,
@@ -49,20 +49,8 @@ onMounted(()=>{
 function openGithubWindow(){
   window.open("https://github.com/turbomixer/turbomixer");
 }
+const currentWindow = ref<any>(null);
 
-function openTabByFile(reference:FileReference){
-  console.info(reference,reference.path());
-  if(editorTabBars.some((tab)=>tab['id'] == 'project://file/'+reference.path())){
-    currentWindow.value = 'project://file/'+reference.path();
-    return;
-  }
-  editorTabBars.push({
-    name:reference.name(),
-    id:'project://file/'+reference.path(),
-    reference:reference
-  })
-  currentWindow.value = 'project://file/'+reference.path();
-}
 
 const editorLoadError = reactive({
   title:'',
@@ -70,63 +58,9 @@ const editorLoadError = reactive({
   enabled:false
 });
 
-watch(currentWindow,async (newValue)=> {
-  editorLoadError.enabled = false;
-  ctx?.editor.deactivate();
-  ctx?.editor.unmount();
-  nextTick(async  ()=>{
-    if(newValue == null){
-
-    }else if(newValue.startsWith('project://internal/')){
-
-    }else if(newValue.startsWith('project://file/')){
-      const accessor = newValue
-          .substring('project://file/'.length)
-          .split('/')
-          .filter((path:any)=>!!path)
-      const file_name = accessor[accessor.length-1];
-      const extension = file_name.substring(file_name.lastIndexOf('.')+1);
-      console.info(extension,accessor)
-      const editor_name = ctx?.project.extension_map.get(extension)
-      if(!editor_name){
-        editorLoadError.title = '无法加载文件"' + accessor[accessor.length - 1] + '"';
-        editorLoadError.body = '找不到用于打开"'+ extension +'"的编辑器:无法识别的扩展名(可能是该类型的编辑器尚未安装)'
-        editorLoadError.enabled = true;
-        return;
-      }
-      const tab = editorTabBars.find(tab=>tab.id == newValue);
-      console.info('tab',tab);
-      if(!tab || !tab.reference){
-        editorLoadError.title = '内部错误';
-        editorLoadError.body = '请重新打开文件，必要时请联系开发者(错误代码:E_INTERNAL_TAB_READ_ERROR)'
-        editorLoadError.enabled = true;
-        return;
-      }
-      if(!(tab.reference as FileReference).isOpen()){
-        await (tab.reference as FileReference).open();
-      }
-      //@ts-ignore
-      ctx?.editor.activate(editor_name as any);
-      ctx?.editor.mount(tab.reference);
-    }
-  })
-});
-
-function closeTabbarItem(id:string) {
-  const index = editorTabBars.findIndex(tab=>tab.id == id);
-  const newWindow = ((editorTabBars[index - 1]?.id ) ?? (editorTabBars[index + 1]?.id) ?? null)
-  if((editorTabBars[index].reference as FileReference)?.isOpen()){
-    (editorTabBars[index].reference as FileReference).close();
-  }
-  editorTabBars.splice(index,1)
-  currentWindow.value = newWindow
-}
-
 const projectName = ref("")
 
-const currentPath = computed(()=>[projectName.value ?? '未命名项目' ,
-    ...(currentWindow.value?.startsWith?.('project://file/') ? currentWindow.value.substring('project://file/'.length).split('/').filter((s:string)=>!!s) : [])
-])
+const currentPath = computed(()=>[projectName.value ?? '未命名项目'])
 
 let oldSubscribers : Subscription[] = [];
 
@@ -145,6 +79,38 @@ watch(project,(changed)=>{
   subscribeProject(changed as (Project|null))
 })
 
+const tabbar = new EditorTabbarManager(ctx as Context);
+
+tabbar.currentTab.pipe(pairwise()).subscribe(([oldValue,currentValue])=>{
+  if(oldValue instanceof EditorTabbarItem){
+    const value = ctx?.editor.save();
+    if(value)
+      oldValue.content.next(value);
+  }
+  currentWindow.value = currentValue?.id ?? null;
+  if(currentValue instanceof EditorTabbarItem){
+    ctx?.editor.open(currentValue.editor.value,currentValue.content.value);
+  }
+})
+
+ctx?.editor.getEditorObservable().pipe(pairwise()).subscribe(([oldValue,currentValue])=>{
+  oldValue?.detach?.();
+  if(container.value)
+    currentValue?.attach?.(container.value);
+})
+
+
+tabbar.tabs.subscribe((data)=>{
+  tabs.value = data.map(tab => ({id:tab.id,name:tab.title.value}));
+})
+
+function openTabByFile(reference:FileReference){
+  tabbar.file(reference);
+}
+
+function closeTabbarItem(id:string) {
+  tabbar.close(id);
+}
 </script>
 
 <template>
@@ -202,7 +168,7 @@ watch(project,(changed)=>{
         <FileTreeNode v-if="project" :name="projectName" :accessor="project.files" @on-item-click="openTabByFile"></FileTreeNode>
       </div>
       <div style="flex:1;display: flex;flex-direction: column;">
-        <Tabbar :tabs="editorTabBars" v-model="currentWindow" :closable="true" @close="closeTabbarItem"></Tabbar>
+        <Tabbar v-model="currentWindow" :tabs="tabs" :closable="true" @close="closeTabbarItem"></Tabbar>
         <div class="turbomixer-editor" ref="container" v-show="!editorLoadError.enabled">
 
         </div>

@@ -1,0 +1,16 @@
+{
+  "name": "@turbomixer/reactive",
+  "version": "0.0.1",
+  "description": "The reactive module for turbomixer",
+  "main": "lib/index.cjs",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
+  "repository": "https://github.com/turbomixer/turbomixer",
+  "author": "TimeBather<open-source@timebather.cn>",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.5.1",
+    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.7.2"
+  }
+}

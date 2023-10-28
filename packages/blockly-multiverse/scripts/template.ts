@@ -95,12 +95,10 @@ export function createBlockly():typeof Blockly{
     };
 
     const setTimeout = function(cb,t,...args){
-        console.info('setTimeout',cb,t);
         _window.setTimeout(cb,t,...args);
     }
 
     const setInterval = function(cb,t,...args){
-        console.info('setInterval',cb,t);
         _window.setTimeout(cb,t,...args);
     }
 
