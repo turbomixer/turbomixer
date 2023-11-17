@@ -1,2 +1,2 @@
 # turbomixer
-A universal low-code editor engine.
+A universal visual programming IDE & engine.
