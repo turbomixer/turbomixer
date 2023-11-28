@@ -15,5 +15,8 @@
   },
   "devDependencies": {
     "@types/axios": "^0.14.0"
+  },
+  "peerDependencies": {
+    "@turbomixer/core": "^0.0.1"
   }
 }

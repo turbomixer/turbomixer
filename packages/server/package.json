@@ -15,5 +15,8 @@
   },
   "devDependencies": {
     "@types/koa__router": "^12.0.2"
+  },
+  "peerDependencies": {
+    "@turbomixer/core": "^0.0.1"
   }
 }

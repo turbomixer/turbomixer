@@ -12,5 +12,8 @@
     "@msgpack/msgpack": "^3.0.0-beta2",
     "blockly-multiverse": "^0.0.1",
     "cordis": "^2.8.8"
+  },
+  "peerDependencies": {
+    "@turbomixer/core": "^0.0.1"
   }
 }

@@ -19,5 +19,8 @@
     "@vitejs/plugin-vue": "^4.3.4",
     "vite": "^4.4.9"
   },
+  "peerDependencies": {
+    "@turbomixer/core": "^0.0.1"
+  },
   "compiler": "vite"
 }
