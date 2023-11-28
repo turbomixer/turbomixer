@@ -1,0 +1,12 @@
+{
+  "name": "@turbomixer/server",
+  "version": "0.0.1",
+  "description": "The server module for turbomixer IDE",
+  "main": "lib/index.cjs",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
+  "repository": "https://github.com/turbomixer/turbomixer",
+  "author": "TimeBather<open-source@timebather.cn>",
+  "license": "MIT",
+  "dependencies": {}
+}
