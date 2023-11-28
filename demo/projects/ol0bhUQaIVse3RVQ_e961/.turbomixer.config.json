@@ -1,0 +1,11 @@
+{
+  "name": "测试项目",
+  "settings": {
+    "project": {
+      "demo": {
+        "settings": true
+      }
+    }
+  },
+  "runtimes": []
+}

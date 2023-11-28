@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+      "strict": true,
+      "target": "es2022",
+      "module": "ES6",
+      "declaration": true,
+      "emitDeclarationOnly": true,
+      "composite": true,
+      "incremental": true,
+      "skipLibCheck": true,
+      "esModuleInterop": true,
+      "moduleResolution": "node",
+    },
+  }

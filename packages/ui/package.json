@@ -1,0 +1,23 @@
+{
+  "name": "@turbomixer/ui",
+  "version": "0.0.1",
+  "description": "The user interface module for turbomixer",
+  "main": "lib/ui.js",
+  "types": "lib/index.d.ts",
+  "repository": "https://github.com/turbomixer/turbomixer",
+  "author": "TimeBather<open-source@timebather.cn>",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "@vueuse/rxjs": "^10.6.1",
+    "element-plus": "^2.3.12",
+    "lodash": "^4.17.21",
+    "nanoid": "^5.0.3",
+    "vue": "^3.3.4"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.3.4",
+    "vite": "^4.4.9"
+  },
+  "compiler": "vite"
+}

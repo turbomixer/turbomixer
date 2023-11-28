@@ -1,0 +1,36 @@
+{
+  "private": true,
+  "name": "@turbomixer/workspace",
+  "version": "0.0.1",
+  "description": "A universal low-code editor engine",
+  "repository": "https://github.com/turbomixer/turbomixer",
+  "author": "TimeBather<open-source@timebather.cn>",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@koa/router": "^11.0.2",
+    "@minatojs/core": "^2.4.2",
+    "@types/koa__router": "^12.0.2",
+    "@vitejs/plugin-vue": "^4.4.0",
+    "chai": "^4.3.8",
+    "esbuild": "^0.19.2",
+    "esbuild-register": "^3.5.0",
+    "koa": "^2.14.2",
+    "mocha": "^10.2.0",
+    "socket.io": "^4.7.2",
+    "typescript": "^5.2.2",
+    "vite": "^4.4.11",
+    "vue-tsc": "^1.8.15",
+    "yakumo": "^0.3.13",
+    "yakumo-core-patch": "^0.4.4",
+    "yakumo-esbuild": "^0.3.25",
+    "yakumo-filter": "^0.3.2",
+    "yakumo-locate": "^0.3.3",
+    "yakumo-tsc": "^0.3.12"
+  },
+  "scripts": {
+    "compile": "yakumo esbuild",
+    "build": "yakumo esbuild && yakumo tsc && yarn yakumo vite && yarn workspace @turbomixer/ui vue-tsc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@turbomixer/core",
+  "version": "0.0.1",
+  "description": "The core module for turbomixer",
+  "main": "lib/index.cjs",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
+  "repository": "https://github.com/turbomixer/turbomixer",
+  "author": "TimeBather<open-source@timebather.cn>",
+  "license": "MIT",
+  "dependencies": {
+    "cordis": "^2.8.8",
+    "rxjs": "^7.8.1"
+  }
+}
