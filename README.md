@@ -7,6 +7,12 @@ NPM/Yarn
 ```
 
 ## 测试
+### 启动 TurboMixer 后端服务器(Demo Only,WIP)
+```shell
+cd demo
+node ./server.js
+```
+### 启动 Vite 服务器
 ```shell
 yarn # 安装必须依赖
 yarn vite # 启动测试服务器
