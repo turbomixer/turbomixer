@@ -3,9 +3,20 @@
     "compilerOptions": {
       "baseUrl": ".",
       "paths": {
-        "turbomixer": ["packages/turbomixer/src"],
         "@turbomixer/core": ["packages/core/src"],
-        "@turbomixer/generator": ["packages/generator/src"],
+
+        "@turbomixer/server": ["packages/server/src"],
+        "@turbomixer/client": ["packages/client/src"],
+
+        "@turbomixer/ui": ["packages/ui/src"],
+
+
+        "@turbomixer/blockly": ["packages/blockly/src"],
+
+        "blockly-multiverse": ["packages/blockly-multiverse/src"],
+
+
+        "koishi-plugin-turbomixer": ["external/koishi/src"]
       },
     },
     "files": [],
