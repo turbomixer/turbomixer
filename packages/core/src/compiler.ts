@@ -9,7 +9,7 @@ declare module "."{
 }
 export abstract class Compiler extends Service{
 
-    static readonly using = ['compiler'];
+    static readonly inject = ['compiler'];
 
     protected constructor(protected ctx:Context,protected editor:string,protected target:string,protected platform:string) {
         super(ctx,'compiler:'+editor+'/'+target+'_'+platform);

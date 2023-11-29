@@ -17,7 +17,7 @@ function flatLinkedTable<T>(head:LinkedMapValue<T, any>):({value:T,key?:string})
 
 
 
-ctx?.using(['navigation'],(ctx)=>{
+ctx?.inject(['navigation'],(ctx)=>{
   const reloadWindows = ()=>{
     titleSubscriptions.forEach(dispose=>dispose());
     titleSubscriptions.clear();

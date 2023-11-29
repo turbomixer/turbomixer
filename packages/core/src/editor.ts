@@ -19,7 +19,7 @@ export interface Editors{
 
 export abstract class Editor<C extends Context = Context,T=any> extends Service<C>{
 
-    static using = ['editor'];
+    static inject = ['editor'];
 
     protected constructor(ctx:C,name:string) {
         super(ctx,'editor:'+name);

@@ -20,7 +20,7 @@ const model = computed({
 const clients = ref<any[]>([]);
 
 onMounted(()=>{
-  ctx?.using(['clients'],async (ctx:Context)=>{
+  ctx?.inject(['clients'],async (ctx:Context)=>{
     clients.value = ctx.clients.list().map((client)=>({
       id:client.key,
       name:client.name

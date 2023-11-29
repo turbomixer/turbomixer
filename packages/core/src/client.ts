@@ -11,7 +11,7 @@ export abstract class Client<C extends Context = Context>{
 
     static reusable = true;
 
-    static using = ['clients'];
+    static inject = ['clients'];
 
     protected ctx : C;
 
