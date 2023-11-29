@@ -16,15 +16,13 @@ export namespace Reactive{
         return subject
     }
 
-    export function behavior<T>(ctx:Context,initialValue:T,callback:(subject:BehaviorSubject<T>)=>void){
-        ctx.on('ready',()=>{
-
-        })
+    export function behavior<T>(ctx:Context,initialValue:T,callback:(subject:BehaviorSubject<T>|undefined)=>void){
+        behaviors<[T]>(ctx,[initialValue] ,(value)=>callback(value[0]))
     }
 
     export type BehaviorTransformer<T> = (input:T)=>BehaviorSubject<T>
 
-    export function behaviors<T extends readonly any[],P>(ctx:Context,initialValues:T,callback:(subjects:ExtractBehavior<T>)=>void){
+    export function behaviors<T extends readonly any[]>(ctx:Context,initialValues:T,callback:(subjects:ExtractBehavior<T>)=>void){
         let subjects:ExtractBehavior<T> | null = null;
         ctx.on('ready',()=>{
             subjects?.forEach((value)=>value?.complete());
@@ -37,5 +35,6 @@ export namespace Reactive{
             callback(initialValues.map(()=>undefined) as ExtractBehavior<T>);
         })
     }
+
 }
 
