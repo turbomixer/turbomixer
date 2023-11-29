@@ -28,4 +28,4 @@ export function createTurbomixer(config?:App.Config){
     return app;
 }
 
-    export type {Events} from 'cordis'
+export type {Events} from 'cordis'
