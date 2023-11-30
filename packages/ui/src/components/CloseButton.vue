@@ -11,7 +11,7 @@ import {inject} from "vue";
 import {Context} from "@turbomixer/core";
 
 const ctx = inject<Context>("ctx");
-function removeNavigationItem(key){
+function removeNavigationItem(key:string){
   const item = ctx?.navigation.entities.getItemByKey(key);
   if(item)
   ctx?.navigation.remove(item.value);
