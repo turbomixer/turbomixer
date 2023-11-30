@@ -283,6 +283,7 @@ export class TurboMixerOfficialFileAccessor implements FileAccessor{
 export class TurboMixerOfficialRuntime implements Runtime<TurboMixerOfficialClientProject>{
     status: BehaviorSubject<RuntimeStatus> = new BehaviorSubject<RuntimeStatus>(RuntimeStatus.STOPPED);
     version: BehaviorSubject<string> = new BehaviorSubject<string>("");
+    updated_at: BehaviorSubject<string> = new BehaviorSubject<string>("");
 
     subscription: (status:RuntimeStatus)=>void
 
