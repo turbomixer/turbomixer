@@ -187,7 +187,7 @@ export class TurboMixerOfficialClientProjectDirectoryAccessor extends DirectoryA
         let subscription_result = {id:null};
 
         try{
-            subscription_result = await server_socket.timeout(1500).emitWithAck("watch-directory",await this.getPath());
+            subscription_result = await server_socket.timeout(1500).emitWithAck("file/watch-directory",await this.getPath());
         }catch (e){
             return watcher;
         }
@@ -199,15 +199,15 @@ export class TurboMixerOfficialClientProjectDirectoryAccessor extends DirectoryA
             watcher.next(await this.list())
         }
 
-        server_socket.on("watch-directory:"+subscription_result['id'],client_subscription_callback);
+        server_socket.on("file/watch-directory:"+subscription_result['id'],client_subscription_callback);
 
         let disposed = false;
 
         const dispose = ()=>{
             if(disposed)
                 return;
-            server_socket.off("watch-directory:"+subscription_result['id'],client_subscription_callback);
-            server_socket.emit("unwatch",subscription_result['id'])
+            server_socket.off("file/watch-directory:"+subscription_result['id'],client_subscription_callback);
+            server_socket.emit("file/unwatch-directory",subscription_result['id'])
             disposed = true;
         }
 
