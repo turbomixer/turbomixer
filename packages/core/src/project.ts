@@ -24,7 +24,7 @@ export abstract class Project<C extends Context> extends Service{
 
     abstract file?: DirectoryAccessor;
 
-    abstract name: BehaviorSubject<string>;
+    abstract project_name: BehaviorSubject<string>;
 
 
     abstract listRuntimes():Promise<RuntimeInfo[]>;

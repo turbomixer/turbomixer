@@ -100,7 +100,7 @@ export class TurboMixerOfficialClientProject extends Project<Context>{
 
     client: Axios
 
-    name : BehaviorSubject<string> = new BehaviorSubject<string>("")
+    project_name : BehaviorSubject<string> = new BehaviorSubject<string>("")
 
     tm_client: TurboMixerOfficialClient;
 
@@ -115,7 +115,7 @@ export class TurboMixerOfficialClientProject extends Project<Context>{
 
     async start(): Promise<void> {
         const configure = (await this.get("")).data as TurboMixerProjectInformation;
-        this.name.next(configure.name);
+        this.project_name.next(configure.name);
         this.socket = this.tm_client.createChannel(this.id);
         this.socket.connect();
         this.file = new TurboMixerOfficialClientProjectDirectoryAccessor(this.ctx,"/",this);
@@ -129,7 +129,7 @@ export class TurboMixerOfficialClientProject extends Project<Context>{
         if(this.file_provider)
             this.ctx.file.unregister(this.file_provider);
         this.socket?.disconnect();
-        this.name.complete();
+        this.project_name.complete();
     }
 
     get(url:string,config?:AxiosRequestConfig){

@@ -37,7 +37,7 @@ watch(container,(newValue)=>{
 })
 
 ctx?.inject(['project'],async (ctx)=>{
-  project_title.value = await firstValueFrom(ctx.project.name) as string;
+  project_title.value = await firstValueFrom(ctx.project.project_name) as string;
   ctx.on('dispose',()=>{project_title.value = "";})
 })
 
