@@ -120,7 +120,7 @@ export class FileService extends Service {
 
     registerExtension(extension_name:string,plugin:Plugin){
         this.plugins.set(extension_name,plugin);
-        this.caller.on('dispose',()=>{
+        this[Context.current].on('dispose',()=>{
             this.plugins.delete(extension_name);
         })
     }
