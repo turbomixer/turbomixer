@@ -114,7 +114,7 @@ export class FileService extends Service {
         if(this.ctx.navigation.entities.hasKey('file://'+path)){
             this.ctx.navigation.select('file://'+path);
         }else{
-            this.ctx.plugin(FileEditorNavigationEntity,accessor);
+            this.ctx.plugin<FileAccessor>(FileEditorNavigationEntity,accessor);
         }
     }
 
@@ -178,6 +178,6 @@ export class FileEditorNavigationEntity extends NavigationEntity{
 }
 
 export interface FileResourceAccessor{
-    name: Observable<string>
+    name: string
     root: DirectoryAccessor
 }
