@@ -101,7 +101,7 @@ export class BlocklyEditor extends Editor{
             return ()=>null;
         this.blocks.add(block);
         this.ctx.emit("blockly/block-added",block);
-        return DisposableHelper.makeDisposable(this.caller,()=>{
+        return DisposableHelper.makeDisposable(this[Context.current],()=>{
             this.blocks.delete(block);
             this.ctx.emit('blockly/block-removed',block);
         })
@@ -112,7 +112,7 @@ export class BlocklyEditor extends Editor{
             return ()=>null;
         this.category.add(definition);
         this.ctx.emit("blockly/category-changed");
-        return DisposableHelper.makeDisposable(this.caller,()=>{
+        return DisposableHelper.makeDisposable(this[Context.current],()=>{
             this.category.delete(definition);
             this.ctx.emit("blockly/category-changed");
         });
