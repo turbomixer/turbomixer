@@ -24,13 +24,13 @@ export abstract class Client<C extends Context = Context>{
         ctx.on('ready', async () => {
             await Promise.resolve()
             await this.start()
-            await this.connect();
             ctx.clients.add(key,this);
+            await this.connect();
         })
 
         ctx.on('dispose', async () => {
-            ctx.clients.remove(key);
             await this.disconnect();
+            ctx.clients.remove(key);
             await this.stop();
         })
 
