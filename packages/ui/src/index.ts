@@ -1,7 +1,7 @@
 import {Service, Context, Awaitable} from "@turbomixer/core";
 import App from './App.vue'
 import {createApp,App as VueApp} from "vue";
-
+import './index.css'
 export interface UiConfigure{
     element:HTMLElement
 }
