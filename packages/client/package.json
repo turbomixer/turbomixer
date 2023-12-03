@@ -2,7 +2,6 @@
   "name": "@turbomixer/client",
   "version": "0.0.1",
   "description": "The client module for turbomixer",
-  "main": "lib/index.cjs",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
   "repository": "https://github.com/turbomixer/turbomixer",
