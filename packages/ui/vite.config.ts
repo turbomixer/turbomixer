@@ -8,7 +8,7 @@ export default defineConfig({
         emptyOutDir: true,
         cssCodeSplit: false,
         lib: {
-            entry: path.resolve(directory, 'src/index.ts'),
+            entry: path.resolve(__dirname, './src/index.ts'),
             formats: ['es']
         },
         outDir: 'lib/'
