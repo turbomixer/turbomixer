@@ -4,13 +4,14 @@ require:
   - yakumo-locate
   - yakumo-filter
   - ./yakumo/vite.ts
+  - ./yakumo/plugin.ts
 commands:
   esbuild:
     filter-targets:
       $not:
         $regex:
           - $: compiler
-          - vite
+          - (vite|plugin)
   tsc:
     filter-targets:
       $not:
@@ -22,3 +23,8 @@ commands:
       $regex:
         - $: compiler
         - vite
+  plugin:
+    filter-targets:
+      $regex:
+        - $: compiler
+        - plugin
