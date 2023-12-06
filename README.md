@@ -1,4 +1,7 @@
 # TurboMixer 低代码引擎
+![License](https://img.shields.io/badge/License-MIT-blue)
+![License(WebUI)](https://img.shields.io/badge/License(WebUI)-AGPL--3.0-red)
+
 正在编写中....
 ## 测试环境要求
 ```
