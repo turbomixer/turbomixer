@@ -2,8 +2,7 @@
   "name": "@turbomixer/editor-blockly",
   "version": "0.0.1",
   "description": "The core module for turbomixer",
-  "main": "lib/index.cjs",
-  "module": "lib/index.mjs",
+  "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": "https://github.com/turbomixer/turbomixer",
   "author": "TimeBather<open-source@timebather.cn>",
@@ -14,5 +13,6 @@
   },
   "peerDependencies": {
     "@turbomixer/core": "^0.0.1"
-  }
+  },
+  "compiler": "plugin"
 }

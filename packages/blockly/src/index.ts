@@ -259,3 +259,5 @@ export class BlocklyEditorInstance extends EditorInstance{
         this.blockly = undefined;
     }
 }
+
+export default BlocklyEditor;
