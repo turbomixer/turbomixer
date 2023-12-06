@@ -6,6 +6,7 @@ import Koa from 'koa'
 import KoaRouter from '@koa/router'
 import {ProjectClientConnection, ProjectClientConnectionConfigure} from "./client";
 import {remove} from 'cosmokit'
+import * as fs from "fs";
 
 declare module "."{
     interface Context{
@@ -66,6 +67,22 @@ export class TurboMixerServer extends Service{
         apiRouter.get('/projects',async (ctx,next)=>{
             console.info("Project")
             ctx.body = await this.ctx.project.list();
+        })
+
+        apiRouter.get('/projects\/([^/]+)',async (ctx,next)=>{
+            await this.ctx.project.get(ctx,ctx.params[0],'/.turbomixer.config.json','file');
+        })
+
+        apiRouter.get('/plugins\/(.*)',async (ctx,next)=>{
+            try{
+                let path = require.resolve(ctx.params[0],{});
+                if(path){
+                    ctx.body = await fs.promises.readFile(path);
+                    ctx.set('Content-Type','text/javascript');
+                }
+            }catch (e) {
+                console.warn(e);
+            }
         })
 
         apiRouter.get('/projects\/([^/]+)\/files\/(.*)',async (ctx,next)=>{
