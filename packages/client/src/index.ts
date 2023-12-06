@@ -12,8 +12,10 @@ import {
     RuntimeStatus
 } from "@turbomixer/core";
 import axios, {Axios, AxiosRequestConfig} from 'axios'
+import type {ForkScope} from 'cordis'
 import {Manager as SocketManager, Manager, Socket} from "socket.io-client";
 import {BehaviorSubject, combineLatest, firstValueFrom, map, mergeMap, Observable} from 'rxjs'
+import {} from '@turbomixer/loader'
 
 export interface TurboMixerOfficialClientConfig{
     server:string,
@@ -88,6 +90,7 @@ export interface TurboMixerOfficialClientProjectConfig{
 
 export interface TurboMixerProjectInformation{
     name:string
+    plugins?:Record<any, any>
 }
 
 export class TurboMixerOfficialClientProject extends Project<Context>{
@@ -106,6 +109,8 @@ export class TurboMixerOfficialClientProject extends Project<Context>{
 
     protected file_provider? : FileResourceAccessor
 
+    plugins : Record<string, ForkScope> = {}
+
     constructor(protected ctx:Context,protected config:TurboMixerOfficialClientProjectConfig) {
         super(ctx);
         this.client = config.client;
@@ -117,6 +122,37 @@ export class TurboMixerOfficialClientProject extends Project<Context>{
         const configure = (await this.get("")).data as TurboMixerProjectInformation;
         this.project_name.next(configure.name);
         this.socket = this.tm_client.createChannel(this.id);
+        let pluginUpdate = (plugins:Record<string, any>)=>{
+            let clientPluginKeys = Object.keys(this.plugins);
+            let serverPluginKeys = Object.keys(plugins);
+            let newPlugins = serverPluginKeys.filter((key)=>clientPluginKeys.indexOf(key) == -1);
+            let disposePlugins = clientPluginKeys.filter((key)=>serverPluginKeys.indexOf(key) == -1)
+            newPlugins.forEach(async (id)=>{
+                const plugin = await this.client.get('/plugins/'+plugins[id].entry,{
+                    responseType:"text"
+                });
+
+                this.plugins[id] = this.ctx.plugin({
+                    apply(ctx:Context){
+                        ctx.module.load(id,plugin.data);
+                        console.info("Loading:"+id);
+                        ctx.inject(['module:'+id],(ctx)=>{
+                            console.info("Loaded:"+id);
+                            let module = (ctx as any)['module:'+id];
+                            console.info(module);
+                            ctx.plugin(module.default ?? module);
+                        })
+                    }
+                })
+            })
+            disposePlugins.forEach((id)=>{
+                this.plugins[id].dispose()
+            })
+        };
+        this.socket.on('plugin',pluginUpdate)
+        if(configure.plugins)
+            pluginUpdate(configure.plugins);
+
         this.socket.connect();
         this.file = new TurboMixerOfficialClientProjectDirectoryAccessor(this.ctx,"/",this);
         this.ctx.file.register(this.file_provider = {
@@ -129,7 +165,9 @@ export class TurboMixerOfficialClientProject extends Project<Context>{
         if(this.file_provider)
             this.ctx.file.unregister(this.file_provider);
         this.socket?.disconnect();
+        this.socket?.offAny();
         this.project_name.complete();
+        Object.values(this.plugins).forEach(plugin=>plugin.dispose());
     }
 
     get(url:string,config?:AxiosRequestConfig){
@@ -176,7 +214,11 @@ export class TurboMixerOfficialClientProjectDirectoryAccessor extends DirectoryA
     }
 
     async list(): Promise<ProjectDirectoryChildren[]> {
-        return (await this.project?.get("/files/"+(await this.getPath())+"?method=list"))?.data;
+        return (await this.project?.get("/files/"+(await this.getPath()),{
+            headers:{
+                'Accept':'application/directory+json'
+            }
+        }))?.data;
     }
 
     async watch(): Promise<BehaviorSubject<ProjectDirectoryChildren[]>> {
@@ -264,7 +306,10 @@ export class TurboMixerOfficialFileAccessor implements FileAccessor{
 
     async read(): Promise<ArrayBuffer> {
         return (await this.directory.value.getProject().get('/files'+await this.getPath()+'?method=read',{
-            responseType:'arraybuffer'
+            responseType:'arraybuffer',
+            headers:{
+                'Accept':'application/octet-stream'
+            }
         })).data;
     }
 
