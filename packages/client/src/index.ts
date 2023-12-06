@@ -156,7 +156,7 @@ export class TurboMixerOfficialClientProject extends Project<Context>{
         this.socket.connect();
         this.file = new TurboMixerOfficialClientProjectDirectoryAccessor(this.ctx,"/",this);
         this.ctx.file.register(this.file_provider = {
-            name:this.name,
+            name:this.project_name,
             root:this.file
         });
     }

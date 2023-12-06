@@ -178,6 +178,6 @@ export class FileEditorNavigationEntity extends NavigationEntity{
 }
 
 export interface FileResourceAccessor{
-    name: string
+    name: BehaviorSubject<string>
     root: DirectoryAccessor
 }
