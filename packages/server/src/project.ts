@@ -28,7 +28,7 @@ export class ServerProjectManager extends Service{
             if(!file.isDirectory())
                 return;
             const realPath = file.path;
-            const configFile = path.join(realPath,'.turbomixer.config.json')
+            const configFile = path.join(realPath,'turbomixer.config.json')
             try{
                 let config = JSON.parse(await fs.readFile(configFile,{encoding:'utf-8'}))
                 projects.push({

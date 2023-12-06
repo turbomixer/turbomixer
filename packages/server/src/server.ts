@@ -70,7 +70,7 @@ export class TurboMixerServer extends Service{
         })
 
         apiRouter.get('/projects\/([^/]+)',async (ctx,next)=>{
-            await this.ctx.project.get(ctx,ctx.params[0],'/.turbomixer.config.json','file');
+            await this.ctx.project.get(ctx,ctx.params[0],'/turbomixer.config.json','file');
         })
 
         apiRouter.get('/plugins\/(.*)',async (ctx,next)=>{
