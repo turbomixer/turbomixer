@@ -99,6 +99,10 @@ export class TurboMixerServer extends Service{
             }
         })
 
+        apiRouter.put('/projects\/([^/]+)\/files\/(.*)',async (ctx,next)=>{
+            console.info("PUT")
+            await this.ctx.project.put(ctx,ctx.params[0],ctx.params[1])
+        })
         this.router.use(apiRouter.routes());
     }
 

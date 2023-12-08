@@ -3,7 +3,8 @@ import {Service} from 'cordis'
 import { promises as fs } from 'fs'
 import * as path from "path";
 import {ProjectDescriptor} from "@turbomixer/core";
-import {NotFound} from "http-errors";
+import getRawBody from 'raw-body';
+
 import {Context as KoaContext} from 'koa';
 declare module "."{
     interface Context{
@@ -44,7 +45,7 @@ export class ServerProjectManager extends Service{
 
     async path(project:string){
         try{
-            let project_path = path.join(this.ctx.baseDir,this.config.root);
+            let project_path = path.join(this.ctx.baseDir,this.config.root,project);
             await fs.access(project_path);
             return project_path;
         }catch (e) {
@@ -64,12 +65,12 @@ export class ServerProjectManager extends Service{
         }
         let file_info = await fs.stat(project_children_path);
         if(type == 'directory' && file_info.isDirectory()){
-            //ctx.res.setHeader('Content-Type','application/directory+json');
+            ctx.set('Content-Type','application/directory+json');
             ctx.body = await this.listDirectory(project_children_path);
             return;
         }
         if(type == 'file' && file_info.isFile()){
-            //ctx.res.setHeader('Content-Type','application/octet-stream');
+            ctx.set('Content-Type','application/octet-stream');
             ctx.body = await this.readFile(project_children_path);
             return;
         }
@@ -91,5 +92,39 @@ export class ServerProjectManager extends Service{
 
     async readFile(project_path:string){
         return await fs.readFile(project_path);
+    }
+
+    async put(ctx:KoaContext,project:string,file_path:string){
+        let type = ctx.get('content-type');
+
+        let project_root = await this.path(project);
+
+        if(!project_root)
+            return;
+
+        let project_path = path.join(project_root,file_path);
+
+        switch (type){
+            case 'application/octet-stream':
+                await this.write(ctx,project_path);
+                return;
+            case 'application/directory':
+                await this.createDirectory(ctx,project_path);
+                return;
+            default:
+                ctx.body = {'error':'Unsupported file type'};
+                ctx.code = 415;
+        }
+    }
+
+    async write(ctx:KoaContext,project_path:string){
+        const body = await getRawBody(ctx.req);
+        await fs.writeFile(project_path,body);
+        ctx.body = {};
+    }
+
+    async createDirectory(ctx:KoaContext,project_path:string){
+        await fs.mkdir(project_path);
+        ctx.body = {};
     }
 }

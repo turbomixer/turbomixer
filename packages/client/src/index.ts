@@ -178,6 +178,10 @@ export class TurboMixerOfficialClientProject extends Project<Context>{
         return this.client.post("/projects/"+this.id+url,data,config);
     }
 
+    put(url:string,data:any,config?:AxiosRequestConfig){
+        return this.client.put("/projects/"+this.id+url,data,config);
+    }
+
     delete(url:string,config?:AxiosRequestConfig){
         return this.client.delete("/projects/"+this.id+url,config);
     }
@@ -305,7 +309,7 @@ export class TurboMixerOfficialFileAccessor implements FileAccessor{
     }
 
     async read(): Promise<ArrayBuffer> {
-        return (await this.directory.value.getProject().get('/files'+await this.getPath()+'?method=read',{
+        return (await this.directory.value.getProject().get('/files'+await this.getPath(),{
             responseType:'arraybuffer',
             headers:{
                 'Accept':'application/octet-stream'
@@ -319,7 +323,10 @@ export class TurboMixerOfficialFileAccessor implements FileAccessor{
     }
 
     async write(data: ArrayBuffer): Promise<boolean> {
-        (await this.directory.value.getProject().post('/files'+await this.getPath()+'?method=write',data,{
+        (await this.directory.value.getProject().put('/files'+await this.getPath(),data,{
+            headers:{
+                'Content-Type':'application/octet-stream'
+            }
         }))
         return true;
     }
