@@ -198,6 +198,7 @@ export class BlocklyEditorInstance extends EditorInstance{
         this.ctx["editor:blockly"].blocks.forEach(block=>(this.blockly as typeof Blockly).Blocks[block.id] = block);
         this.element = document.createElement("div")
         this.element.style.height = '100%';
+        this.element.style.position = 'relative';
         this.element.style.zIndex = '0'
         element.appendChild(this.element);
         this.workspace = this.blockly.inject(this.element,{
