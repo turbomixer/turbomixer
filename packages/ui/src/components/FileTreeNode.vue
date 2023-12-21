@@ -9,7 +9,7 @@ import {
 import Angle from "./Angle.vue";
 import {computed, onMounted, onUnmounted, watch, ref, toRef, inject} from "vue";
 import {filter, connect, map, merge, combineLatest, BehaviorSubject, Observable, mergeMap, switchMap, tap} from 'rxjs';
-import {useObservable, toObserver, from as fromRef} from "@vueuse/rxjs";
+import {useObservable, toObserver, from as fromRef, useSubject} from "@vueuse/rxjs";
 import _ from 'lodash';
 import {cache, extractMap} from "../reactive";
 
@@ -40,30 +40,34 @@ let directoryAccessorSubject: BehaviorSubject<DirectoryAccessor | undefined> | u
 let subscription: null | (() => void) = null;
 
 let activeWatchers : Set<()=>void> = new Set;
+
+let enabled = ref(false);
+
+let enabledSub = fromRef(enabled);
+
 onMounted(() => {
   directoryAccessorSubject = new BehaviorSubject(directoryAccessor.value);
-  const _sub = directoryAccessorSubject.pipe(
-      filter(accessor => !!accessor),
+  const _sub = combineLatest({accessor:directoryAccessorSubject,enabled:enabledSub}).pipe(
+      tap({
+        next:()=>{
+          activeWatchers.forEach((cb)=>cb());
+          activeWatchers.clear();
+        }
+      }),
+      filter(accessor => !!accessor.accessor && accessor.enabled),
       connect(
           shared => combineLatest({
             files: shared.pipe(
-                mergeMap(async accessor => await accessor?.watch()),
+                mergeMap(async accessor => await accessor.accessor?.watch()),
                 tap({
-                  next:(watcher)=>activeWatchers.add(()=>watcher?.complete()),
-                  finalize:()=>{
-                    activeWatchers.forEach((cb)=>cb());
-                    activeWatchers.clear();
-                  }
+                  next:(watcher)=>activeWatchers.add(()=>watcher?.complete())
                 }),
                 mergeMap(o => (o ?? []))
             ),
             accessor: shared
           })
       ),
-          map<
-              { files: ProjectDirectoryChildren[], accessor?: DirectoryAccessor },
-              (ProjectDirectoryChildren & { accessor?: DirectoryAccessor })[]
-          >((value) => value.files.map((file) => ({...file, accessor: value.accessor}))),
+          map((value) => value.files.map((file) => ({...file, accessor: value.accessor.accessor}))),
           cache('name', (file) => file.type == 'directory' ? file.accessor?.directory(file.name) : file.accessor?.file(file.name)),
           connect(
               shared => combineLatest({
@@ -107,7 +111,6 @@ const directories = ref<any[]>([])
 
 const files = ref<any[]>([])
 
-const enabled = ref(false);
 
 function onClick() {
   if (directoryAccessor.value) {
