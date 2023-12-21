@@ -59,7 +59,7 @@ const dialogs = reactive({
       </div>
       <DropdownMenu>
         <DropdownMenuGroup title="项目" id="project">
-          <DropdownMenuItem>新建</DropdownMenuItem>
+          <DropdownMenuItem @click="dialogs.project.new = true">新建</DropdownMenuItem>
           <DropdownMenuItem @click="dialogs.project.open = true">打开</DropdownMenuItem>
           <DropdownMenuItem >保存</DropdownMenuItem>
           <DropdownMenuItem >设置</DropdownMenuItem>
