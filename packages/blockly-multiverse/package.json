@@ -1,12 +1,16 @@
 {
   "name": "blockly-multiverse",
-  "version": "0.0.1",
+  "version": "0.0.2-prealpha.1",
   "description": "Multi-instance blockly!",
   "main": "lib/index.js",
   "repository": "https://github.com/turbomixer/turbomixer",
   "author": "TimeBather<open-source@timebather.cn>",
   "license": "MIT",
-  "files": ["lib"],
+  "files": [
+    "package.json",
+    "lib",
+    "dist"
+  ],
   "scripts": {
     "build": "esbuild --platform=node scripts/build.ts --format=cjs | node"
   },

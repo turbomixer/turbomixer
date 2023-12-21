@@ -1,6 +1,6 @@
 {
   "name": "@turbomixer/application",
-  "version": "0.0.1",
+  "version": "0.0.2-prealpha.1",
   "description": "The frontend application for turbomixer",
   "main": "lib/index.html",
   "repository": "https://github.com/turbomixer/turbomixer",
@@ -8,15 +8,19 @@
   "license": "AGPL-3.0",
   "dependencies": {},
   "type": "module",
+  "files": [
+    "package.json",
+    "lib",
+    "dist"
+  ],
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.3.4",
-    "vite": "^4.4.9",
-    "@turbomixer/ui": "^0.0.1",
-    "@turbomixer/core": "^0.0.1",
-    "@turbomixer/client": "^0.0.1"
+    "vite": "^4.4.9"
   },
   "peerDependencies": {
-    "@turbomixer/ui": "^0.0.1"
+    "@turbomixer/ui": "^0.0.2-prealpha.1",
+    "@turbomixer/core": "^0.0.2-prealpha.1",
+    "@turbomixer/client": "^0.0.2-prealpha.1"
   },
   "compiler": "vite"
 }

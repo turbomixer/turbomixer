@@ -1,6 +1,6 @@
 {
   "name": "@turbomixer/editor-blockly",
-  "version": "0.0.1",
+  "version": "0.0.2-prealpha.1",
   "description": "The core module for turbomixer",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -19,15 +19,20 @@
       "client": ["./dist"]
     }
   },
+  "files": [
+    "package.json",
+    "lib",
+    "dist"
+  ],
   "repository": "https://github.com/turbomixer/turbomixer",
   "author": "TimeBather<open-source@timebather.cn>",
   "license": "MIT",
   "dependencies": {
     "@msgpack/msgpack": "^3.0.0-beta2",
-    "blockly-multiverse": "^0.0.1"
+    "blockly-multiverse": "^0.0.2-prealpha.1"
   },
   "peerDependencies": {
-    "@turbomixer/core": "^0.0.1"
+    "@turbomixer/core": "^0.0.2-prealpha.1"
   },
   "compiler": "plugin",
   "devDependencies": {

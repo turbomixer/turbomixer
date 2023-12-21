@@ -1,6 +1,6 @@
 {
   "name": "@turbomixer/core",
-  "version": "0.0.1",
+  "version": "0.0.2-prealpha.1",
   "description": "The core module for turbomixer",
   "main": "lib/index.cjs",
   "module": "lib/index.mjs",
@@ -8,6 +8,11 @@
   "repository": "https://github.com/turbomixer/turbomixer",
   "author": "TimeBather<open-source@timebather.cn>",
   "license": "MIT",
+  "files": [
+    "package.json",
+    "lib",
+    "dist"
+  ],
   "dependencies": {
     "cordis": "^3.3.1",
     "rxjs": "^7.8.1"

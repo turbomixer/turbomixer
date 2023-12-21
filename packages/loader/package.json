@@ -1,6 +1,6 @@
 {
   "name": "@turbomixer/loader",
-  "version": "0.0.1",
+  "version": "0.0.2-prealpha.1",
   "description": "The server module for turbomixer IDE",
   "main": "lib/index.cjs",
   "module": "lib/index.mjs",
@@ -9,8 +9,12 @@
   "author": "TimeBather<open-source@timebather.cn>",
   "license": "MIT",
   "dependencies": {},
+  "files": [
+    "package.json",
+    "lib",
+    "dist"
+  ],
   "peerDependencies": {
-    "@turbomixer/core": "^0.0.1",
-    "koishi": "^4.15.6"
+    "@turbomixer/core": "^0.0.2-prealpha.1"
   }
 }
