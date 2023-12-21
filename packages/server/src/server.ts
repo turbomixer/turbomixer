@@ -48,8 +48,9 @@ export class TurboMixerServer extends Service{
             .of(/^\/projects\/([\w-]+)/)
 
         nsp.on('connection',async (socket)=>{
-            console.info("Connection",nsp.name);
-            let path = await this.ctx.project.path(nsp.name);
+            let project_id = socket.nsp.name.substring('/projects/'.length);
+            let path = await this.ctx.project.path(project_id);
+            console.info('Socket connection:'+project_id)
             if(!path){
                 socket.emit('hello',{error:'project.not_found'})
                 socket.disconnect();
