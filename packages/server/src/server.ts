@@ -7,6 +7,8 @@ import KoaRouter from '@koa/router'
 import {ProjectClientConnection, ProjectClientConnectionConfigure} from "./client";
 import {remove} from 'cosmokit'
 import * as fs from "fs";
+import {join} from "path";
+import {lookup as lookupMimeType} from 'mime-types';
 
 declare module "."{
     interface Context{
@@ -74,18 +76,6 @@ export class TurboMixerServer extends Service{
             await this.ctx.project.get(ctx,ctx.params[0],'/turbomixer.config.json','file');
         })
 
-        apiRouter.get('/plugins\/(.*)',async (ctx,next)=>{
-            try{
-                let path = require.resolve(ctx.params[0],{});
-                if(path){
-                    ctx.body = await fs.promises.readFile(path);
-                    ctx.set('Content-Type','text/javascript');
-                }
-            }catch (e) {
-                console.warn(e);
-            }
-        })
-
         apiRouter.get('/projects\/([^/]+)\/files\/(.*)',async (ctx,next)=>{
             switch (ctx.accepts(['application/auto-detect','application/directory+json','application/octet-stream'])){
                 case 'application/directory+json':
@@ -104,6 +94,33 @@ export class TurboMixerServer extends Service{
             console.info("PUT")
             await this.ctx.project.put(ctx,ctx.params[0],ctx.params[1])
         })
+
+        apiRouter.get('/plugins',(ctx,next)=>{
+            ctx.body = Array.from(this.ctx.turbomixer_plugin.get_editor_plugins()).map(([id,value])=>({
+                id:value.id,
+                name:value.name,
+                using:value.using,
+                automation:value.automation
+            }));
+        })
+
+        apiRouter.get('/plugins/([^/]+)/(.*)',async (ctx,next)=>{
+            let data = this.ctx.turbomixer_plugin.get_editor_plugins().get(ctx.params[0]);
+            if(!data)
+                return;
+            if(data.production){
+                let path;
+                if(!ctx.params[1] || ctx.params[1] == ''){
+                    path = 'index.js'
+                }else path = ctx.params[1];
+                let project_path = join(data.production,path);
+
+                ctx.body = await fs.promises.readFile(project_path);
+                ctx.set("content-type",(lookupMimeType(path) ?? 'application/octet-stream')+';charset=utf-8');
+            }
+        })
+
+
         this.router.use(apiRouter.routes());
     }
 
