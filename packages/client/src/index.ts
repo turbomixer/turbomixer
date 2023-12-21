@@ -128,7 +128,7 @@ export class TurboMixerOfficialClientProject extends Project<Context>{
             let newPlugins = serverPluginKeys.filter((key)=>clientPluginKeys.indexOf(key) == -1);
             let disposePlugins = clientPluginKeys.filter((key)=>serverPluginKeys.indexOf(key) == -1)
             newPlugins.forEach(async (id)=>{
-                const plugin = await this.client.get('/plugins/'+plugins[id].entry,{
+                const plugin = await this.client.get('/plugins/'+id+'/',{
                     responseType:"text"
                 });
 
@@ -259,7 +259,7 @@ export class TurboMixerOfficialClientProjectDirectoryAccessor extends DirectoryA
 
         watcher.subscribe({
             complete(){
-                dispose();
+                    dispose();
             }
         })
 
@@ -295,8 +295,8 @@ export class TurboMixerOfficialFileAccessor implements FileAccessor{
             if(name.startsWith("/") || !parent){
                 return name;
             }
-            if(parent.endsWith("/"))
-                return parent + name;
+            if(parent.endsWith("/") || name.startsWith("/"))
+                return (parent ?? '') + name;
             return parent + "/" + name;
         }))
     }

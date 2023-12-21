@@ -4,6 +4,21 @@
   "description": "The core module for turbomixer",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "client": ["./dist"]
+    }
+  },
   "repository": "https://github.com/turbomixer/turbomixer",
   "author": "TimeBather<open-source@timebather.cn>",
   "license": "MIT",
@@ -14,5 +29,8 @@
   "peerDependencies": {
     "@turbomixer/core": "^0.0.1"
   },
-  "compiler": "plugin"
+  "compiler": "plugin",
+  "devDependencies": {
+    "vite-plugin-dts": "^3.6.4"
+  }
 }

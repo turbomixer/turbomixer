@@ -27,6 +27,6 @@
   },
   "scripts": {
     "compile": "yakumo esbuild",
-    "build": "yakumo esbuild && yakumo tsc && yarn yakumo vite && yarn workspace @turbomixer/ui vue-tsc"
+    "build": "yakumo esbuild && yakumo plugin && yakumo tsc && yarn yakumo vite && yarn workspace @turbomixer/ui vue-tsc"
   }
 }

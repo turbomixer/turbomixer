@@ -2,8 +2,10 @@ import {register} from "yakumo";
 import path from "path";
 import {build as buildVite} from "vite";
 import {build} from "esbuild";
-
+import vue from "@vitejs/plugin-vue";
+import dts from 'vite-plugin-dts';
 register("plugin",async (project)=>{
+
     for(let dir of Object.keys(project.targets)){
         const directory = path.join(project.cwd , dir);
         await buildVite({
@@ -12,15 +14,28 @@ register("plugin",async (project)=>{
                 emptyOutDir: true,
                 cssCodeSplit: false,
                 lib: {
-                    entry: path.resolve(directory, './src/index.ts'),
+                    entry: path.resolve(directory, './client/index.ts'),
                     formats: ['cjs'],
                     fileName:'index'
                 },
-                outDir: 'lib/',
+                outDir: 'dist/',
                 rollupOptions:{
                     external:['@turbomixer/core']
                 }
             },
+            plugins:[
+                vue(),
+                dts({
+                    compilerOptions:{
+                        rootDir:path.resolve(directory, './client/'),
+                        outDir:path.resolve(directory, './dist/'),
+                    },
+                    include:["client"]
+                })
+            ]
         })
     }
+
+
+
 })

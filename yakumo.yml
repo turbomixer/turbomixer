@@ -11,7 +11,7 @@ commands:
       $not:
         $regex:
           - $: compiler
-          - (vite|plugin)
+          - vite
   tsc:
     filter-targets:
       $not:
