@@ -11,6 +11,8 @@ export interface ProjectClientConnectionConfigure{
 
 export class ProjectClientConnection {
 
+    static readonly reusable = true
+
     closeListener: (...args:any[])=>void
     messageListener: (event:string,...args:any[])=>void
 
