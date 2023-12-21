@@ -25,24 +25,28 @@ export class ProjectClientConnection {
         this.socket.on('disconnect',this.closeListener = ()=>this.close() )
         this.socket.onAny(this.messageListener = (event, ...args)=> {
             let id = nanoid(16);
+            let callback = args[args.length - 1];
+            if(!(callback instanceof Function)){
+                callback = null;
+            }
             switch (event){
                 case 'file/watch-directory':
                     this.watchDirectory(id,args[0]);
-                    return {id}
+                    return callback?.({id})
                 case 'file/unwatch-directory':
                     this.unwatchDirectory(args[0]);
-                    return {}
+                    return callback?.({})
                 case 'file/watch-file':
                     this.watchFile(id,args[0]);
-                    return {id}
+                    return callback?.({id})
                 case 'file/unwatch-file':
                     this.unwatchFile(args[0]);
-                    return {}
+                    return callback?.({})
                 case 'runtime/open':
                     this.watchRuntime(id,args[0]);
-                    return {id}
+                    return callback?.({id})
                 case 'runtime/close':
-                    this.unwatchRuntime(args[0]);
+                    return callback?.({})
             }
         })
     }
@@ -66,7 +70,7 @@ export class ProjectClientConnection {
     }
 
     unwatchDirectory(id:string):void{
-
+        this.directoryWatchers[id]?.close();
     }
 
     watchFile(id:string,directory:string):void{
