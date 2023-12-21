@@ -2,6 +2,7 @@ import {Socket} from "socket.io";
 import {nanoid} from 'nanoid';
 import {Context} from "cordis";
 import * as fs from "fs";
+import * as path from "path";
 
 export interface ProjectClientConnectionConfigure{
     socket:Socket<any,any,any,any>
@@ -64,8 +65,8 @@ export class ProjectClientConnection {
     directoryWatchers: Record<string, fs.FSWatcher> = {}
 
     watchDirectory(id:string,directory:string):void{
-        this.directoryWatchers[id] = fs.watch(directory,(event, filename)=>{
-            console.info(event,filename);
+        this.directoryWatchers[id] = fs.watch(path.join(this.configure.root,directory),(event, filename)=>{
+            this.socket.emit('file/watch-directory:'+id)
         })
     }
 
