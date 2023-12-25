@@ -1,6 +1,6 @@
 {
   "name": "@turbomixer/server",
-  "version": "0.0.2-prealpha.1",
+  "version": "0.0.2-prealpha.2",
   "description": "The server module for turbomixer IDE",
   "main": "lib/index.cjs",
   "module": "lib/index.mjs",

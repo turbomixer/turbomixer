@@ -1,6 +1,6 @@
 {
   "name": "@turbomixer/core",
-  "version": "0.0.2-prealpha.1",
+  "version": "0.0.2-prealpha.2",
   "description": "The core module for turbomixer",
   "main": "lib/index.cjs",
   "module": "lib/index.mjs",
