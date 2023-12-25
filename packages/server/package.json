@@ -19,7 +19,8 @@
     "cosmokit": "^1.5.1",
     "koa": "^2.14.2",
     "raw-body": "^2.5.2",
-    "socket.io": "^4.7.2"
+    "socket.io": "^4.7.2",
+    "nanoid": "^3.3.3"
   },
   "devDependencies": {
     "@satorijs/router": "^1.1.2",
