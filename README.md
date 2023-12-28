@@ -1,4 +1,4 @@
-# TurboMixer 低代码引擎
+# TurboMixer 通用可视化编程编辑器
 ![License](https://img.shields.io/badge/License-MIT-blue)
 ![License(WebUI)](https://img.shields.io/badge/License(WebUI)-AGPL--3.0-red)
 
