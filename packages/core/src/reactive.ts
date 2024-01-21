@@ -12,6 +12,14 @@ declare module "."{
     }
 }
 
+export type ExtractBehavior<T extends Record<string, any>> = {
+    [K in keyof T]: BehaviorSubject<T[K]>
+}
+
+export type ExtractSubject<T extends Record<string, any>> = {
+    [K in keyof T]: Subject<T[K]>
+}
+
 export class ReactiveService extends Service{
     constructor(ctx:Context) {
         super(ctx,'reactive');
@@ -59,5 +67,13 @@ export class ReactiveService extends Service{
         subscription.add(()=>dispose());
 
         return subscription as any;
+    }
+
+    behaviors<T extends Record<string, any>>(values:T):ExtractBehavior<T>{
+        return Object.fromEntries(Object.entries(values).map(([key,value])=>[key,this.behavior(value)])) as any;
+    }
+
+    subjects<T extends Record<string, any>>(names:(keyof T)[]):ExtractSubject<T>{
+        return Object.fromEntries(names.map((name)=>[name,this.subject()])) as any;
     }
 }
