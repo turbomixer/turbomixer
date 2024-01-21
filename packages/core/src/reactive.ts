@@ -1,40 +1,63 @@
-import {Context} from "cordis";
-import {BehaviorSubject} from "rxjs";
+import { Context,Service } from 'cordis';
+import {
+    BehaviorSubject,
+    Observable,
+    Observer,
+    Subject,
+} from "rxjs";
 
-export namespace Reactive{
-
-    export type ExtractBehavior<T extends readonly any[]> = {
-        [K in keyof T]?:BehaviorSubject<T[K]>
+declare module "."{
+    interface Context{
+        reactive:ReactiveService;
     }
-
-
-    export function createBehaviorSubject<T>(value:T,ctx:Context):BehaviorSubject<T>{
-        const subject = new BehaviorSubject(value);
-        ctx.on('dispose',()=>{
-            subject.complete()
-        })
-        return subject
-    }
-
-    export function behavior<T>(ctx:Context,initialValue:T,callback:(subject:BehaviorSubject<T>|undefined)=>void){
-        behaviors<[T]>(ctx,[initialValue] ,(value)=>callback(value[0]))
-    }
-
-    export type BehaviorTransformer<T> = (input:T)=>BehaviorSubject<T>
-
-    export function behaviors<T extends readonly any[]>(ctx:Context,initialValues:T,callback:(subjects:ExtractBehavior<T>)=>void){
-        let subjects:ExtractBehavior<T> | null = null;
-        ctx.on('ready',()=>{
-            subjects?.forEach((value)=>value?.complete());
-            subjects = initialValues.map(function<P>(value:P){return new BehaviorSubject(value)}) as ExtractBehavior<T>;
-            callback(subjects);
-        })
-
-        ctx.on('dispose',()=>{
-            subjects?.forEach((value)=>value?.complete());
-            callback(initialValues.map(()=>undefined) as ExtractBehavior<T>);
-        })
-    }
-
 }
 
+export class ReactiveService extends Service{
+    constructor(ctx:Context) {
+        super(ctx,'reactive');
+    }
+
+    behavior<T>(value:T){
+        const behavior = new BehaviorSubject(value);
+
+        const dispose = this[Context.current].scope.collect('reactive/behavior',()=>{
+            behavior.complete();
+        });
+
+        behavior.subscribe({
+            complete:()=>dispose()
+        })
+
+        return behavior;
+    }
+
+    subject<T>():Subject<T>{
+        const subject = new Subject<T>();
+
+        const dispose = this[Context.current].scope.collect('reactive/subject',()=>{
+            subject.complete();
+        });
+
+        subject.subscribe({
+            complete:()=>dispose()
+        })
+
+        return subject;
+    }
+
+    subscribe<T>(
+        external:Observable<T>,
+        observerOrNext?: Partial<Observer<T>> | ((value: T) => void)
+    ):ReturnType<Observable<T>['subscribe']>{
+
+        const subscription = external.subscribe(observerOrNext);
+
+        const dispose = this[Context.current].scope.collect('reactive/subscription',()=>{
+            subscription.unsubscribe();
+        })
+
+        subscription.add(()=>dispose());
+
+        return subscription as any;
+    }
+}

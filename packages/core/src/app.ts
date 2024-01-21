@@ -3,6 +3,7 @@ import {ClientService} from "./client";
 import {EditorService} from "./editor";
 import {FileService} from "./file";
 import {NavigationService} from "./navigation";
+import {ReactiveService} from "./reactive";
 
 export {Context,Service} from 'cordis'
 
@@ -19,6 +20,7 @@ export class App extends Context<App.Config>{
         this.plugin(EditorService);
         this.plugin(FileService);
         this.plugin(NavigationService);
+        this.plugin(ReactiveService);
     }
 }
 

@@ -8,6 +8,7 @@ export * from './infrastructure'
 export * from './disposable'
 export * from './api'
 export * from './runtime'
+export * from './reactive'
 
 declare module "."{
     interface Events{
